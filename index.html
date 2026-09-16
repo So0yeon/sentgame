@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문장 클리닉 — 어색한 문장을 치료하라!</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root{
+  --bg:#EAF2F8; --surface:#FFFFFF; --surface-soft:#F1F5F9;
+  --primary:#2563EB; --primary-soft:#E8F0FF;
+  --mint:#10B981; --mint-soft:#E8F8F2;
+  --text-primary:#172033; --text-secondary:#64748B; --text-muted:#94A3B8;
+  --border:#E2E8F0;
+  --navy:#0F1E3D;
+  --er:#EF4444; --er-soft:#FEE9E9;
+  --gold:#D97706; --gold-soft:#FEF3C7;
+  --c:#2563EB; --c-soft:#E8F0FF;
+  --shadow:0 4px 20px rgba(15,23,42,.05);
+  --radius:20px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(circle at 12px 12px, rgba(37,99,235,.05) 2.4px, transparent 2.4px),
+    var(--bg);
+  background-size:32px 32px, auto;
+  color:var(--text-primary);
+  font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",-apple-system,BlinkMacSystemFont,system-ui,"Malgun Gothic",sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  word-break:keep-all;
+}
+button{font-family:inherit;}
+:focus-visible{outline:3px solid #1D4ED8;outline-offset:3px;border-radius:6px;}
+
+/* ---------- Header ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);box-shadow:0 1px 0 rgba(37,99,235,.06);}
+.topbar-inner{max-width:1200px;margin:0 auto;height:68px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.02em;}
+.brand .mark{width:34px;height:34px;border-radius:11px;background:var(--navy);color:#fff;display:grid;place-items:center;}
+.brand .mark svg{width:19px;height:19px;}
+.counter{font-size:15px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
+.ecg-strip{height:3px;overflow:hidden;background:linear-gradient(90deg,#DCEBFF,#EAF6F0);}
+.ecg-strip svg{display:block;width:200%;height:3px;animation:ecgmove 4.5s linear infinite;}
+@keyframes ecgmove{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ---------- Doctor ID badge (topbar) ---------- */
+.id-badge{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:6px 14px 6px 6px;box-shadow:var(--shadow);}
+.id-badge .id-photo{width:34px;height:34px;border-radius:10px;background:var(--primary-soft);display:grid;place-items:center;font-size:18px;flex:none;}
+.id-badge .id-info{display:flex;flex-direction:column;line-height:1.25;}
+.id-badge .id-name{font-size:13.5px;font-weight:700;letter-spacing:-.01em;}
+.id-badge .id-role{font-size:11px;font-weight:600;color:var(--text-muted);}
+.id-xp{display:flex;align-items:center;gap:5px;background:var(--gold-soft);color:#92400E;font-size:12.5px;font-weight:800;padding:5px 10px;border-radius:999px;white-space:nowrap;}
+.stamp-dots{display:flex;gap:4px;}
+.stamp-dots .sd{width:9px;height:9px;border-radius:50%;background:var(--border);}
+.stamp-dots .sd.on{background:var(--mint);box-shadow:0 0 0 2px var(--mint-soft);}
+.hud-wrap{display:flex;align-items:center;gap:10px;}
+@media(max-width:640px){
+  .id-badge .id-info{display:none;}
+  .id-badge{padding:6px;gap:0;}
+  .id-xp{font-size:11.5px;padding:4px 8px;}
+}
+
+/* ---------- XP toast ---------- */
+.xp-toast{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:80;background:var(--navy);color:#fff;font-size:15px;font-weight:800;padding:10px 20px;border-radius:999px;box-shadow:0 10px 26px rgba(15,23,42,.28);pointer-events:none;opacity:0;display:flex;align-items:center;gap:8px;}
+.xp-toast.show{animation:xpToast 1100ms ease forwards;}
+@keyframes xpToast{0%{opacity:0;transform:translateX(-50%) translateY(6px) scale(.9);}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}78%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.96);}}
+.flow{border-bottom:1px solid var(--border);background:var(--surface);}
+.flow-inner{max-width:1200px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.flow-inner::-webkit-scrollbar{display:none;}
+.flow-step{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--text-muted);white-space:nowrap;padding:5px 6px;border-radius:9px;border:0;background:none;font-family:inherit;cursor:pointer;transition:background 140ms ease,color 140ms ease;}
+.flow-step:hover{background:var(--surface-soft);color:var(--text-secondary);}
+.flow-step .dot{width:19px;height:19px;border-radius:50%;border:1.8px solid var(--border);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--text-muted);background:var(--surface);flex:none;}
+.flow-step.done{color:var(--text-secondary);}
+.flow-step.done .dot{background:var(--mint-soft);border-color:#A7E8CE;color:#047857;}
+.flow-step.now{color:var(--text-primary);font-weight:700;}
+.flow-step.now .dot{background:var(--navy);border-color:var(--navy);color:#fff;}
+.flow-step.now:hover{background:var(--primary-soft);}
+.flow-line{width:18px;height:1.5px;background:var(--border);flex:none;}
+
+/* ---------- Layout ---------- */
+.stage{max-width:1080px;margin:0 auto;padding:40px 28px 80px;}
+.stage.narrow{max-width:860px;}
+.eyebrow{font-size:14px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--surface-soft);color:var(--text-secondary);font-size:13.5px;font-weight:600;}
+.chip.live{background:var(--primary-soft);color:#1D4ED8;}
+.chip.tint{background:var(--c-soft);color:var(--c);}
+.chip svg{width:15px;height:15px;}
+h1.screen-title{font-size:30px;font-weight:700;letter-spacing:-.03em;margin:14px 0 8px;line-height:1.35;}
+p.screen-sub{font-size:17px;color:var(--text-secondary);margin:0 0 28px;max-width:62ch;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;}
+.card + .card{margin-top:18px;}
+.section-q{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px;}
+.section-help{font-size:15px;color:var(--text-secondary);margin:0 0 18px;}
+
+/* ---------- Sentence ---------- */
+.sentence-card{padding:44px 32px;text-align:center;}
+.sentence{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.55;display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 2px;}
+.token{font:inherit;color:inherit;background:none;border:0;padding:4px 10px;border-radius:12px;cursor:pointer;transition:background 160ms ease,transform 160ms ease;position:relative;}
+.token:hover{background:var(--surface-soft);}
+.token.on{background:var(--c-soft);color:var(--c);transform:scale(1.03);}
+.token.on::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:3px;border-radius:2px;background:var(--c);}
+.token.plain{cursor:default;}
+.token.plain:hover{background:none;}
+.slot{display:inline-flex;align-items:baseline;padding:4px 12px;border-radius:12px;background:var(--c-soft);color:var(--c);box-shadow:inset 0 -3px 0 var(--c);}
+.link-note{margin-top:20px;font-size:16px;font-weight:600;color:var(--c);display:inline-flex;align-items:center;gap:8px;background:var(--c-soft);padding:8px 16px;border-radius:999px;}
+
+/* ---------- Choices ---------- */
+.choice-row{display:flex;flex-wrap:wrap;gap:12px;}
+.choice{border:1.5px solid var(--border);background:var(--surface);border-radius:14px;padding:14px 20px;min-height:52px;font-size:17px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:border-color 160ms ease,background 160ms ease,transform 160ms ease;display:inline-flex;align-items:center;gap:9px;}
+.choice:hover{border-color:#CBD5E1;background:#FBFCFE;}
+.choice.sel{border-color:var(--c);background:var(--c-soft);color:var(--c);}
+.choice.sel .tick{opacity:1;}
+.choice .tick{opacity:0;font-weight:700;}
+.choice.wide{width:100%;justify-content:flex-start;text-align:left;}
+.choice .num{width:26px;height:26px;border-radius:8px;background:var(--surface-soft);color:var(--text-secondary);font-size:14px;display:grid;place-items:center;flex:none;}
+.choice.sel .num{background:var(--c);color:#fff;}
+.slot-label{font-size:14px;font-weight:600;color:var(--text-secondary);margin:0 0 9px;display:flex;align-items:center;gap:7px;}
+.slot-label .bar{width:14px;height:3px;border-radius:2px;background:var(--c);}
+.slot-group + .slot-group{margin-top:22px;}
+
+/* ---------- Feedback ---------- */
+.fb{margin-top:20px;border-radius:16px;padding:18px 20px;display:flex;gap:13px;align-items:flex-start;font-size:16px;line-height:1.6;animation:rise 200ms ease both;}
+.fb .ic{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:15px;}
+.fb.good{background:var(--mint-soft);color:#065F46;}
+.fb.good .ic{background:#B9EAD4;}
+.fb.look{background:#FEF3E2;color:#92400E;}
+.fb.look .ic{background:#FBD9A5;}
+.fb.info{background:var(--primary-soft);color:#1E40AF;}
+.fb.info .ic{background:#C7DAFB;}
+.fb b{font-weight:700;}
+@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.reveal{animation:rise 240ms ease both;}
+
+/* ---------- Before / After ---------- */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin-top:22px;}
+.ba-box{border:1px solid var(--border);border-radius:16px;padding:20px;background:var(--surface-soft);}
+.ba-box.after{background:var(--mint-soft);border-color:#BDE9D6;}
+.ba-tag{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;}
+.ba-box.after .ba-tag{color:#047857;}
+.ba-text{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.5;}
+.ba-text mark{background:#FDE68A;color:inherit;padding:1px 4px;border-radius:5px;}
+.ba-box.after .ba-text mark{background:#A7F3D0;}
+.ba-arrow{color:var(--text-muted);font-size:22px;}
+@media(max-width:720px){.ba{grid-template-columns:1fr;}.ba-arrow{transform:rotate(90deg);text-align:center;}}
+
+/* ---------- Pair discovery ---------- */
+.pair{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.pair input{font:inherit;font-size:18px;font-weight:600;padding:13px 16px;border:1.5px solid var(--border);border-radius:13px;background:var(--surface);width:210px;color:var(--text-primary);}
+.pair input:focus{border-color:var(--c);outline:none;box-shadow:0 0 0 3px var(--c-soft);}
+.pair .sym{font-size:22px;color:var(--text-muted);}
+
+/* ---------- Diagnosis cards ---------- */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:1100px){.grid4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.grid4{grid-template-columns:1fr;}}
+.dcard{position:relative;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px;cursor:pointer;transition:transform 180ms ease,border-color 180ms ease;display:flex;flex-direction:column;gap:12px;min-height:186px;width:100%;}
+.dcard:hover{transform:scale(1.02);border-color:#CBD5E1;}
+.dcard .ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;}
+.dcard .ico svg{width:23px;height:23px;}
+.dcard .no{font-size:14px;font-weight:700;color:var(--text-muted);}
+.dcard .nm{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.35;}
+.dcard .pr{font-size:14.5px;color:var(--text-secondary);font-weight:600;margin-top:auto;}
+.dcard .state{font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+.dcard[data-done="1"]{border-color:#BDE9D6;}
+.dcard[data-done="1"] .state{color:#047857;}
+.dcard-xp{position:absolute;top:14px;right:14px;font-size:11.5px;font-weight:800;color:#92400E;background:var(--gold-soft);padding:3px 8px;border-radius:999px;}
+
+/* ---------- Hospital floor map (hub) ---------- */
+.floor-board{background:var(--navy);border-radius:20px;padding:18px 22px;color:#fff;display:flex;align-items:center;gap:14px;margin-bottom:22px;box-shadow:var(--shadow);}
+.floor-board .fb-ico{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:20px;flex:none;}
+.floor-board .fb-tt{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+.floor-board .fb-sub{font-size:13px;color:#B9C6E4;font-weight:600;margin-top:2px;}
+.floor-map{position:relative;}
+.room-plaque{position:relative;}
+.room-plaque .rp-light{position:absolute;top:16px;right:16px;width:11px;height:11px;border-radius:50%;background:var(--er);box-shadow:0 0 0 3px var(--er-soft);}
+.room-plaque[data-done="1"] .rp-light{background:var(--mint);box-shadow:0 0 0 3px var(--mint-soft);animation:none;}
+.room-plaque:not([data-done="1"]) .rp-light{animation:blinkdot 1.6s ease-in-out infinite;}
+@keyframes blinkdot{0%,100%{opacity:1;}50%{opacity:.35;}}
+.room-plaque .rp-doorno{display:inline-flex;align-items:center;gap:6px;font-family:"Pretendard Variable",monospace;font-size:12.5px;font-weight:800;color:var(--text-muted);letter-spacing:.04em;background:var(--surface-soft);padding:3px 9px;border-radius:7px;}
+
+/* ---------- ID issuance / signup ---------- */
+.badge-print{max-width:360px;margin:0 auto;background:linear-gradient(155deg,#F8FBFF,#EAF2FE);border:1.5px solid #CFE0FB;border-radius:22px;padding:26px 24px;box-shadow:0 16px 40px rgba(15,23,42,.10);position:relative;overflow:hidden;}
+.badge-print::before{content:"";position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.10),transparent 70%);}
+.badge-print .bp-top{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--primary);letter-spacing:.06em;text-transform:uppercase;}
+.badge-print .bp-photo{width:74px;height:74px;border-radius:18px;background:var(--primary-soft);display:grid;place-items:center;font-size:36px;margin:16px auto 14px;}
+.badge-print .bp-name{text-align:center;font-size:22px;font-weight:800;letter-spacing:-.02em;}
+.badge-print .bp-role{text-align:center;font-size:13.5px;font-weight:700;color:var(--text-secondary);margin-top:2px;}
+.badge-print .bp-strip{margin-top:18px;border-top:1.5px dashed #B9CDF2;padding-top:14px;font-size:12.5px;color:var(--text-muted);text-align:center;font-weight:600;letter-spacing:.02em;}
+.name-input{font:inherit;font-size:19px;font-weight:700;padding:15px 18px;border:1.5px solid var(--border);border-radius:14px;width:100%;max-width:320px;text-align:center;background:var(--surface);}
+.name-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+
+/* ---------- Certificate (summary) ---------- */
+.cert-card{position:relative;background:linear-gradient(155deg,#FFFDF6,#FBF4E0);border:2px solid #E9D6A0;border-radius:24px;padding:36px 30px;text-align:center;box-shadow:0 18px 46px rgba(146,64,14,.12);}
+.cert-card::before{content:"";position:absolute;inset:10px;border:1.5px dashed #D8BE7C;border-radius:16px;pointer-events:none;}
+.cert-seal{width:64px;height:64px;border-radius:50%;background:var(--gold-soft);color:#92400E;display:grid;place-items:center;font-size:28px;margin:0 auto 14px;border:2px solid #E9D6A0;}
+.cert-title{font-size:14px;font-weight:800;color:#92400E;letter-spacing:.14em;text-transform:uppercase;}
+.cert-name{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:10px 0 4px;}
+.cert-line{font-size:15.5px;color:var(--text-secondary);font-weight:600;}
+.cert-score{display:inline-flex;align-items:baseline;gap:6px;margin-top:16px;font-size:15px;font-weight:700;color:#92400E;background:var(--gold-soft);padding:8px 18px;border-radius:999px;}
+.cert-score b{font-size:24px;}
+.cert-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.cert-badge{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:var(--surface);border:1.5px solid var(--border);}
+.cert-badge svg{width:24px;height:24px;}
+.cert-badge.on{background:var(--mint-soft);border-color:#A7E8CE;color:#047857;}
+.cert-badge.off{opacity:.35;filter:grayscale(1);}
+
+/* ---------- Diary (composite prescription) ---------- */
+.diary-text{font-size:17px;line-height:2.1;}
+button.diary-sent{font:inherit;color:inherit;background:none;border:0;padding:3px 7px;border-radius:8px;cursor:pointer;transition:background 140ms ease,color 140ms ease;}
+button.diary-sent:hover{background:var(--surface-soft);}
+button.diary-sent.on{background:var(--c-soft);color:var(--c);font-weight:700;box-shadow:inset 0 -2px 0 var(--c);}
+span.diary-sent{padding:3px 7px;border-radius:8px;}
+span.diary-sent.bad-reveal{background:#FEF3E2;color:#92400E;font-weight:700;box-shadow:inset 0 -2px 0 #F59E0B;}
+
+/* ---------- Chart / reference ---------- */
+.ref-row{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);}
+.ref-row + .ref-row{margin-top:12px;}
+.ref-head{display:flex;align-items:center;gap:14px;padding:18px 20px;width:100%;background:none;border:0;cursor:pointer;text-align:left;}
+.ref-head:hover{background:var(--surface-soft);}
+.ref-head .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;}
+.ref-head .ico svg{width:21px;height:21px;}
+.ref-name{font-size:18px;font-weight:700;letter-spacing:-.02em;}
+.ref-pair{font-size:14.5px;color:var(--text-secondary);font-weight:600;}
+.ref-open{margin-left:auto;color:var(--text-muted);font-size:14px;font-weight:600;flex:none;}
+.ref-body{padding:4px 20px 22px;border-top:1px solid var(--border);animation:rise 200ms ease both;}
+.ref-ex{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:18px 0 10px;}
+.ref-ex mark{background:var(--c-soft);color:var(--c);padding:1px 6px;border-radius:6px;}
+.ref-line{font-size:15.5px;color:var(--text-secondary);}
+.mine{margin-top:14px;font-size:15.5px;background:var(--surface-soft);border-radius:12px;padding:12px 16px;}
+.mine b{color:var(--text-primary);}
+
+/* ---------- Paper notice ---------- */
+.paper{display:flex;gap:14px;align-items:flex-start;background:#FFFBEB;border:1px solid #FDE9B5;border-radius:16px;padding:18px 20px;font-size:15.5px;color:#92400E;line-height:1.6;}
+.paper .ic{flex:none;width:26px;height:26px;border-radius:9px;background:#FBD9A5;display:grid;place-items:center;}
+table.wk{width:100%;border-collapse:collapse;margin-top:18px;font-size:15.5px;}
+table.wk th,table.wk td{border:1px solid var(--border);padding:12px 14px;text-align:left;}
+table.wk th{background:var(--surface-soft);font-weight:700;font-size:14.5px;color:var(--text-secondary);}
+table.wk td.blank{color:var(--text-muted);}
+
+/* ---------- Buttons ---------- */
+.btn{border:0;border-radius:13px;height:54px;padding:0 28px;font-size:17px;font-weight:700;letter-spacing:-.01em;cursor:pointer;transition:background 160ms ease,transform 160ms ease;display:inline-flex;align-items:center;justify-content:center;gap:9px;}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#1B3462;}
+.btn-ghost{background:var(--surface);color:var(--text-secondary);border:1.5px solid var(--border);}
+.btn-ghost:hover{color:var(--text-primary);border-color:#CBD5E1;}
+.btn-soft{background:var(--primary-soft);color:#1D4ED8;}
+.btn-soft:hover{background:#DBE7FF;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.navrow{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:32px;}
+.navrow .spacer{flex:1;}
+
+/* ---------- Home / prologue ---------- */
+.hero{min-height:calc(100vh - 68px);display:grid;place-items:center;padding:56px 28px;text-align:center;}
+.hero-inner{max-width:680px;}
+.hero .mark-lg{width:78px;height:78px;border-radius:24px;background:var(--navy);color:#fff;display:grid;place-items:center;margin:0 auto 26px;}
+.hero .mark-lg svg{width:40px;height:40px;}
+.hero h1{font-size:clamp(34px,5vw,54px);font-weight:700;letter-spacing:-.045em;margin:0 0 8px;line-height:1.2;}
+.hero .kicker{font-size:17px;font-weight:600;color:var(--text-secondary);margin:0 0 20px;letter-spacing:.02em;}
+.hero p.lead{font-size:19px;color:var(--text-secondary);line-height:1.75;margin:0 0 36px;}
+.mission{margin-top:44px;padding-top:24px;border-top:1px solid var(--border);font-size:15px;color:var(--text-muted);}
+.mission strong{display:block;margin-top:6px;font-size:17px;color:var(--text-secondary);font-weight:600;}
+.pro-line{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.5;margin:0 0 16px;opacity:0;animation:rise 500ms ease forwards;}
+.pro-line.sub{font-size:clamp(17px,2vw,20px);font-weight:500;color:var(--text-secondary);}
+.speech{margin-top:14px;padding:14px 18px;background:var(--surface-soft);border-left:4px solid var(--c);border-radius:0 14px 14px 0;font-size:17px;font-weight:600;font-style:italic;line-height:1.6;}
+
+/* ---------- Seminar ---------- */
+.seminar-case{padding:48px 32px;text-align:center;}
+.seminar-q{font-size:clamp(22px,2.8vw,30px);font-weight:700;letter-spacing:-.03em;text-align:center;margin:30px 0 0;}
+.pill-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.pill{border:1.5px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 15px;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer;}
+.pill.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* ---------- Summary ---------- */
+.sum-list{display:flex;flex-direction:column;gap:12px;margin:8px 0 0;}
+.sum-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:16px;background:var(--surface-soft);font-size:19px;font-weight:700;letter-spacing:-.02em;}
+.sum-item .ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;}
+.sum-item .ico svg{width:19px;height:19px;}
+.sum-final{text-align:center;font-size:clamp(20px,2.6vw,26px);font-weight:700;letter-spacing:-.03em;line-height:1.55;margin:28px 0 0;}
+textarea.note{width:100%;min-height:110px;font:inherit;font-size:17px;padding:16px;border:1.5px solid var(--border);border-radius:14px;resize:vertical;background:var(--surface);color:var(--text-primary);}
+textarea.note:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+
+/* ---------- Mini-game sidebar ---------- */
+.game-tab{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:40;background:var(--navy);color:#fff;border:0;border-radius:14px 0 0 14px;padding:16px 9px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:-4px 0 16px rgba(15,23,42,.16);transition:right 220ms ease,background 160ms ease;letter-spacing:.02em;}
+.game-tab span:first-child{font-size:19px;}
+.game-tab span:last-child{writing-mode:vertical-rl;}
+.game-tab:hover{background:#1B3462;}
+.game-tab.open{right:300px;}
+
+.game-panel{position:fixed;top:0;right:-300px;width:300px;max-width:86vw;height:100%;background:var(--surface);border-left:1px solid var(--border);box-shadow:-8px 0 24px rgba(15,23,42,.10);z-index:39;transition:right 220ms ease;display:flex;flex-direction:column;}
+.game-panel.open{right:0;}
+.game-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);font-size:16px;font-weight:700;flex:none;}
+.game-x{border:0;background:var(--surface-soft);width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:14px;color:var(--text-secondary);}
+.game-list{padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.game-card{border:1px solid var(--border);border-radius:16px;padding:16px;background:var(--surface);}
+.game-card .gc-top{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.game-card .gc-ico{width:38px;height:38px;border-radius:11px;background:var(--primary-soft);display:grid;place-items:center;font-size:19px;flex:none;}
+.game-card .gc-name{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
+.game-card .gc-best{font-size:12px;color:var(--text-muted);font-weight:700;margin-left:auto;white-space:nowrap;}
+.game-card .gc-tag{display:inline-block;font-size:12px;font-weight:700;color:#1D4ED8;background:var(--primary-soft);padding:3px 9px;border-radius:999px;margin-bottom:8px;}
+.game-card .gc-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.55;margin:0 0 12px;}
+.game-card .btn{width:100%;height:42px;font-size:14.5px;}
+
+/* ---------- Mini-game modal ---------- */
+.game-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;}
+.game-modal.show{display:flex;}
+.game-box{background:var(--surface);border-radius:22px;width:100%;max-width:840px;max-height:94vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,23,42,.3);}
+.game-box-head{display:flex;align-items:center;gap:14px;padding:18px 24px;border-bottom:1px solid var(--border);flex:none;}
+.game-box-head .gt{font-size:19px;font-weight:700;flex:1;}
+.game-hud{display:flex;gap:20px;font-size:16.5px;font-weight:700;color:var(--text-secondary);white-space:nowrap;}
+.game-hud b{color:var(--text-primary);font-size:18px;}
+.game-box-body{padding:26px;overflow-y:auto;}
+.game-desc{font-size:17px;color:var(--text-secondary);line-height:1.75;margin:0;}
+.rain-stage{position:relative;width:100%;aspect-ratio:16/9;min-height:280px;max-height:480px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#DCEBFF 0%,#EFF6FF 55%,#F7FAFF 100%);border:1px solid var(--border);}
+.rain-ground{position:absolute;left:0;right:0;bottom:0;height:6px;background:#94A3B8;}
+.rain-item{position:absolute;top:-60px;left:8px;max-width:min(72%,420px,calc(100% - 16px));box-sizing:border-box;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:13px 18px;font-size:19px;font-weight:700;line-height:1.5;cursor:pointer;box-shadow:0 4px 10px rgba(15,23,42,.08);font-family:inherit;}
+.rain-item:hover{border-color:var(--primary);}
+.rain-item.pop{opacity:0;transform:scale(.5);}
+.rain-item.miss{opacity:0;}
+.rain-stage.shake{animation:shake 260ms ease;}
+@keyframes shake{10%,90%{transform:translateX(-2px);}20%,80%{transform:translateX(4px);}30%,50%,70%{transform:translateX(-8px);}40%,60%{transform:translateX(8px);}}
+.game-tip{margin-top:16px;font-size:16px;color:var(--text-secondary);text-align:center;}
+.game-result{text-align:center;padding:14px 0;}
+.game-result h2{font-size:25px!important;}
+.game-result .game-desc{text-align:center;}
+.game-result .gr-score{font-size:52px;font-weight:800;letter-spacing:-.03em;margin:10px 0;}
+
+/* ---------- Mini-game 2: 수술실 짝맞추기 (memory match) ---------- */
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;perspective:800px;}
+.match-card{aspect-ratio:4/3;position:relative;cursor:pointer;background:none;border:0;font:inherit;padding:0;}
+.match-card .mc-inner{position:absolute;inset:0;border-radius:13px;transform-style:preserve-3d;transition:transform 300ms ease;}
+.match-card.flip .mc-inner{transform:rotateY(180deg);}
+.match-card .mc-face{position:absolute;inset:0;border-radius:13px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;font-size:13.5px;font-weight:700;line-height:1.35;}
+.match-card .mc-back{background:linear-gradient(155deg,var(--navy),#1B3462);color:#fff;font-size:22px;}
+.match-card .mc-front{background:var(--surface);border:1.5px solid var(--border);transform:rotateY(180deg);color:var(--text-primary);}
+.match-card.done .mc-front{background:var(--mint-soft);border-color:#A7E8CE;color:#065F46;}
+.match-card.wrong .mc-front{background:var(--er-soft);border-color:#F8C6C6;color:#991B1B;}
+@media(max-width:560px){.match-grid{grid-template-columns:repeat(4,1fr);gap:7px;}.match-card .mc-face{font-size:11.5px;}}
+
+/* ---------- Mini-game 3: 응급실 골든타임 퀴즈 ---------- */
+.quiz-timer-wrap{display:flex;justify-content:center;margin-bottom:6px;}
+.quiz-timer{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:800;color:#fff;background:conic-gradient(var(--er) calc(var(--p,100)*1%),#FCA5A5 0);transition:background 180ms linear;}
+.quiz-timer span{background:var(--navy);width:60px;height:60px;border-radius:50%;display:grid;place-items:center;}
+.quiz-sentence{font-size:clamp(20px,2.8vw,26px);font-weight:700;text-align:center;line-height:1.6;letter-spacing:-.02em;}
+.quiz-sentence .qblank{display:inline-flex;min-width:64px;justify-content:center;border-bottom:3px solid var(--er);color:var(--er);}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
+@media(max-width:560px){.quiz-opts{grid-template-columns:1fr;}}
+.quiz-opt{border:1.5px solid var(--border);background:var(--surface);border-radius:14px;padding:14px 16px;font-size:16.5px;font-weight:700;cursor:pointer;text-align:center;transition:transform 120ms ease;}
+.quiz-opt.correct{background:var(--mint-soft);border-color:#A7E8CE;color:#065F46;}
+.quiz-opt.wrong{background:var(--er-soft);border-color:#F8C6C6;color:#991B1B;}
+.quiz-streak{text-align:center;font-size:13.5px;font-weight:800;color:var(--gold);margin-top:14px;}
+
+/* ---------- Mini-game 4: 엑스레이 판독 ---------- */
+.xray-stage{background:radial-gradient(ellipse at center,#0B2A4A 0%,#04101F 100%);border-radius:18px;padding:40px 26px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;position:relative;overflow:hidden;}
+.xray-stage::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);pointer-events:none;}
+.xray-sentence{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 4px;position:relative;z-index:1;}
+.xray-tok{font:inherit;font-size:clamp(18px,2.6vw,24px);font-weight:700;color:#BFE3FF;background:none;border:0;padding:4px 8px;border-radius:8px;cursor:pointer;text-shadow:0 0 10px rgba(122,197,255,.55);transition:background 140ms ease;}
+.xray-tok:hover{background:rgba(122,197,255,.16);}
+.xray-tok.hit{background:rgba(16,185,129,.28);color:#D1FAE5;text-shadow:0 0 12px rgba(16,185,129,.8);}
+.xray-tok.miss{background:rgba(239,68,68,.28);color:#FECACA;}
+.xray-timerbar{width:100%;max-width:340px;height:8px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;position:relative;z-index:1;}
+.xray-timerbar i{display:block;height:100%;background:linear-gradient(90deg,#38BDF8,#22D3EE);transition:width 90ms linear;}
+.xray-hint{position:relative;z-index:1;font-size:13.5px;font-weight:700;color:#7DD3FC;letter-spacing:.02em;}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media(max-width:640px){
+  .topbar-inner,.flow-inner{padding-left:18px;padding-right:18px;}
+  .stage{padding:26px 18px 64px;}
+  .card{padding:22px 18px;}
+  .sentence-card{padding:30px 18px;}
+  .btn{width:100%;}
+  .navrow{flex-direction:column-reverse;}
+  .navrow .btn{width:100%;}
+  .game-tab{padding:12px 7px;font-size:11.5px;}
+  .game-tab span:first-child{font-size:16px;}
+  .game-tab.open{right:86vw;}
+  .game-box-body{padding:16px;}
+  .game-box-head{padding:14px 16px;}
+  .game-hud{gap:12px;font-size:14px;}
+  .game-hud b{font-size:15px;}
+  .rain-item{font-size:16px;padding:10px 14px;max-width:min(80%,320px,calc(100% - 16px));}
+  .rain-stage{aspect-ratio:4/3;min-height:240px;max-height:400px;}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v5a4.5 4.5 0 0 0 9 0V3"/><path d="M4.5 3H6M13.5 3H15"/><path d="M10.5 12.5v2.5a4 4 0 0 0 8 0v-1.2"/><circle cx="18.5" cy="11.5" r="2"/></svg></span>
+      문장 클리닉
+    </div>
+    <div class="hud-wrap">
+      <div class="counter" id="counter"></div>
+      <div id="idBadgeSlot"></div>
+    </div>
+  </div>
+</header>
+<div class="ecg-strip" aria-hidden="true"><svg viewBox="0 0 400 12" preserveAspectRatio="none"><path d="M0 6 H140 L152 6 L160 -2 L170 14 L180 1 L188 6 H400 M400 6 H540 L552 6 L560 -2 L570 14 L580 1 L588 6 H800" fill="none" stroke="#93C5FD" stroke-width="1.6"/></svg></div>
+<nav class="flow" id="flow" aria-label="수업 진행 단계"><div class="flow-inner" id="flowInner"></div></nav>
+<div id="xpToast" class="xp-toast" aria-live="polite"></div>
+<main id="stage"></main>
+
+<button type="button" id="gameTab" class="game-tab" data-act="game-toggle" aria-expanded="false" aria-controls="gamePanel">
+  <span aria-hidden="true">🎮</span><span>미니게임</span>
+</button>
+<aside id="gamePanel" class="game-panel" aria-hidden="true" aria-label="미니게임 목록">
+  <div class="game-panel-head">
+    <span>🕹️ 미니게임</span>
+    <button type="button" class="game-x" data-act="game-toggle" aria-label="미니게임 바 닫기">✕</button>
+  </div>
+  <div class="game-list" id="gameList"></div>
+</aside>
+<div id="gameModal" class="game-modal"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   1. 진단 유형 데이터
+   ====================================================================== */
+var ICON = {
+  comp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6.3" cy="12" r="3.3"/><circle cx="17.7" cy="12" r="3.3"/><path d="M9.6 12h4.8"/></svg>',
+  time:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 9.6A8 8 0 1 1 4 13.4"/><path d="M4 5.6v4h4"/><path d="M12 8.4V12l2.6 1.7"/></svg>',
+  honor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="7.5" r="2.8"/><path d="M4.4 19.5c0-3.1 2.4-5.2 5.1-5.2"/><path d="M13.6 12.6h6v4.6h-2.6l-2.6 2.3v-2.3h-.8z"/></svg>',
+  nega:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 8.2H7.4a3.8 3.8 0 0 0 0 7.6H10"/><path d="M14 8.2h2.6a3.8 3.8 0 0 1 0 7.6H14"/><path d="M12 5.6v1.8M12 11.1v1.8M12 16.6v1.8"/></svg>'
+};
+
+var DIAGS = [
+  { id:'comp', no:'①', name:'주술 엇박자증', pair:'주어 ↔ 서술어',
+    pairA:'주어', pairB:'서술어', cat:'문장 성분의 호응', color:'#3B82F6', soft:'#EAF2FE', room:'진단실 01' },
+  { id:'time', no:'②', name:'시간 엇갈림증', pair:'시간 표현 ↔ 서술어',
+    pairA:'시간 표현', pairB:'서술어', cat:'시간 표현의 호응', color:'#10B981', soft:'#E4F6EF', room:'진단실 02' },
+  { id:'honor', no:'③', name:'존중 표현 누락증', pair:'높임 대상 ↔ 조사·서술어',
+    pairA:'높임 대상', pairB:'조사·서술어', cat:'높임 표현의 호응', color:'#8B5CF6', soft:'#F1EBFE', room:'진단실 03' },
+  { id:'nega', no:'④', name:'부정 짝꿍 실종증', pair:'전혀·별로·결코 ↔ 부정 표현',
+    pairA:'전혀·별로·결코', pairB:'부정 표현', cat:'단어 의미상의 호응', color:'#F59E0B', soft:'#FEF2E0', room:'진단실 04' }
+];
+function D(id){ for(var i=0;i<DIAGS.length;i++){ if(DIAGS[i].id===id) return DIAGS[i]; } return DIAGS[0]; }
+function diagIndex(id){ for(var i=0;i<DIAGS.length;i++){ if(DIAGS[i].id===id) return i; } return 0; }
+
+/* ======================================================================
+   2. 탐구(활동 1) 데이터 — 슬롯 두 개의 조합을 직접 바꿔 본다
+   ====================================================================== */
+var EXPLORE = {
+  comp:{
+    caseNo:'CASE #01',
+    ask:'이 문장은 누구의 행동을 말하고 있나요? 두 표현을 바꾸어 보며 살펴봅시다.',
+    before:'민지는 동생에게 책을 읽어 주셨다.',
+    parts:[ {slot:'a'}, {t:'동생에게'}, {t:'책을'}, {slot:'b'} ],
+    a:{ label:'행동을 하는 사람', options:['민지는','할머니께서'], init:'민지는' },
+    b:{ label:'행동을 나타내는 말', options:['읽어 주었다','읽어 주셨다'], init:'읽어 주셨다' },
+    combos:{
+      '민지는|읽어 주었다':{ ok:true,  m:'‘민지는’과 ‘읽어 주었다’가 서로 잘 맞습니다. 친구의 행동이니 높이지 않아요.' },
+      '민지는|읽어 주셨다':{ ok:false, m:'‘민지는’은 높여야 할 분이 아닌데, ‘주셨다’는 높이는 말이에요. 두 표현이 어긋납니다.' },
+      '할머니께서|읽어 주었다':{ ok:false, m:'‘할머니께서’로 높여 놓고 행동을 나타내는 말은 높이지 않았어요. 짝이 하나 빠졌습니다.' },
+      '할머니께서|읽어 주셨다':{ ok:true,  m:'‘할머니께서’와 ‘읽어 주셨다’가 서로 잘 맞습니다. 행동하는 사람이 바뀌니 서술어도 바뀌네요.' }
+    },
+    close:'행동을 나타내는 말은 <b>그 행동을 하는 사람</b>에 따라 달라졌습니다.'
+  },
+  time:{
+    caseNo:'CASE #02',
+    ask:'시간을 나타내는 말과 서술어를 여러 가지로 바꾸어 보세요.',
+    before:'나는 어제 도서관에 간다.',
+    parts:[ {t:'나는'}, {slot:'a'}, {t:'도서관에'}, {slot:'b'} ],
+    a:{ label:'시간을 나타내는 말', options:['어제','내일'], init:'어제' },
+    b:{ label:'서술어', options:['갔다','간다','갈 것이다'], init:'간다' },
+    combos:{
+      '어제|갔다':{ ok:true,  m:'‘어제’와 ‘갔다’ — 둘 다 이미 지나간 일을 나타내므로 잘 어울립니다.' },
+      '어제|간다':{ ok:false, m:'‘어제’는 지나간 때인데 ‘간다’는 지금 하는 일을 나타내요. 시간이 서로 엇갈립니다.' },
+      '어제|갈 것이다':{ ok:false, m:'‘어제’는 지나간 때인데 ‘갈 것이다’는 앞으로 할 일을 나타냅니다.' },
+      '내일|갔다':{ ok:false, m:'‘내일’은 아직 오지 않은 때인데 ‘갔다’는 이미 끝난 일을 나타내요.' },
+      '내일|간다':{ ok:true,  m:'‘내일 간다’처럼 쓰기도 합니다. 다만 앞으로 할 일을 더 분명히 하려면 ‘갈 것이다’가 좋아요.' },
+      '내일|갈 것이다':{ ok:true, m:'‘내일’과 ‘갈 것이다’ — 둘 다 앞으로의 일을 나타내므로 잘 어울립니다.' }
+    },
+    close:'시간을 나타내는 말이 바뀌면 <b>서술어의 모습</b>도 함께 바뀌었습니다.'
+  },
+  honor:{
+    caseNo:'CASE #03',
+    ask:'이 문장에서 높여야 할 분은 누구인가요? 두 표현을 바꾸어 보세요.',
+    before:'선생님께서 우리에게 숙제를 내주었다.',
+    parts:[ {slot:'a'}, {t:'우리에게'}, {t:'숙제를'}, {slot:'b'} ],
+    a:{ label:'높임 대상과 조사', options:['선생님께서','선생님이'], init:'선생님께서' },
+    b:{ label:'서술어', options:['내주셨다','내주었다'], init:'내주었다' },
+    combos:{
+      '선생님께서|내주셨다':{ ok:true,  m:'‘께서’와 ‘-셨다’가 함께 쓰였습니다. 높임의 짝이 모두 맞았어요.' },
+      '선생님께서|내주었다':{ ok:false, m:'‘께서’로 높여 놓고 서술어에서는 높이지 않았어요. 높임의 짝이 하나 빠졌습니다.' },
+      '선생님이|내주셨다':{ ok:false, m:'서술어만 높이고 조사는 ‘이’ 그대로예요. 두 표현이 서로 어긋납니다.' },
+      '선생님이|내주었다':{ ok:false, m:'문장은 말이 되지만 선생님을 전혀 높이지 않았어요. 웃어른께는 ‘께서 ~셨다’를 함께 씁니다.' }
+    },
+    close:'높여야 할 분이 있으면 <b>조사와 서술어가 함께</b> 높임의 모습으로 바뀌었습니다.'
+  },
+  nega:{
+    caseNo:'CASE #04',
+    ask:'앞의 표현과 뒤의 표현을 짝지어 보며 어떤 짝이 자연스러운지 찾아보세요.',
+    before:'나는 그 음식을 별로 좋아한다.',
+    parts:[ {t:'나는'}, {t:'그'}, {t:'음식을'}, {slot:'a'}, {slot:'b'} ],
+    a:{ label:'앞에 오는 말', options:['정말','전혀','별로','결코'], init:'별로' },
+    b:{ label:'뒤에 오는 서술어', options:['좋아한다','좋아하지 않는다'], init:'좋아한다' },
+    combos:{
+      '정말|좋아한다':{ ok:true,  m:'‘정말’은 뒤에 어떤 표현이 와도 쓸 수 있는 말이에요.' },
+      '정말|좋아하지 않는다':{ ok:true, m:'‘정말’은 긍정과 부정 어느 쪽과도 어울립니다. 다른 말들과 비교해 보세요.' },
+      '전혀|좋아한다':{ ok:false, m:'‘전혀’ 다음에는 ‘~않다’ 같은 말이 와야 해요. 앞말이 뒷말을 부르고 있습니다.' },
+      '전혀|좋아하지 않는다':{ ok:true, m:'‘전혀’와 ‘좋아하지 않는다’ — 앞말과 뒷말이 딱 맞는 짝입니다.' },
+      '별로|좋아한다':{ ok:false, m:'‘별로’ 다음에는 ‘~않다’가 와야 자연스러워요. 지금은 짝이 실종되었습니다.' },
+      '별로|좋아하지 않는다':{ ok:true, m:'‘별로’와 ‘좋아하지 않는다’가 자연스럽게 어울립니다.' },
+      '결코|좋아한다':{ ok:false, m:'‘결코’ 다음에도 ‘~않다’가 와야 합니다.' },
+      '결코|좋아하지 않는다':{ ok:true, m:'‘결코’와 ‘좋아하지 않는다’ — 이 역시 서로를 부르는 짝이에요.' }
+    },
+    close:'‘전혀·별로·결코’는 뒤에 <b>반드시 부정하는 말</b>을 데리고 다녔습니다.'
+  }
+};
+
+/* ======================================================================
+   3. 활동 2 — 문장 처방 12문항 (유형별 3문항, 자연스러운 문장 포함)
+   ====================================================================== */
+var CASES = [
+  { id:'comp-01', diag:'comp', natural:false,
+    tokens:['내','꿈은','훌륭한','요리사가','되고 싶다.'],
+    bad:[1,4], fix:[4], options:['되는 것이다.','되고 싶다.','되었다.'], answer:0,
+    corrected:'내 꿈은 훌륭한 요리사가 되는 것이다.',
+    explain:'‘내 꿈은’으로 시작했으니 서술어도 ‘~되는 것이다’로 받아야 주어와 짝이 맞습니다.',
+    hint:'문장의 주어를 먼저 찾아보세요. 그 주어와 서술어가 서로 어울리나요?' },
+  { id:'comp-02', diag:'comp', natural:true,
+    tokens:['우리','반','친구들은','운동장에서','신나게','뛰어놀았다.'],
+    healthy:'주어 ‘친구들은’과 서술어 ‘뛰어놀았다’가 자연스럽게 어울립니다.' },
+  { id:'comp-03', diag:'comp', natural:false,
+    tokens:['내가','가장','좋아하는','계절은','여름을 좋아한다.'],
+    bad:[3,4], fix:[4], options:['여름이다.','여름을 좋아한다.','여름을 좋아했다.'], answer:0,
+    corrected:'내가 가장 좋아하는 계절은 여름이다.',
+    explain:'주어가 ‘계절은’이므로 서술어는 ‘여름이다’가 되어야 짝이 맞습니다.',
+    hint:'무엇에 대해 말하고 있나요? 주어를 찾아 서술어와 나란히 놓아 보세요.' },
+
+  { id:'time-01', diag:'time', natural:false,
+    tokens:['나는','어제','친구와','영화를','본다.'],
+    bad:[1,4], fix:[4], options:['봤다.','본다.','볼 것이다.'], answer:0,
+    corrected:'나는 어제 친구와 영화를 봤다.',
+    explain:'‘어제’는 지나간 일을 나타내므로 ‘봤다’와 자연스럽게 어울립니다.',
+    hint:'시간을 나타내는 말을 먼저 찾아보세요.' },
+  { id:'time-02', diag:'time', natural:false,
+    tokens:['내일','우리','가족은','할머니','댁에','갔다.'],
+    bad:[0,5], fix:[5], options:['갈 것이다.','갔다.','갔었다.'], answer:0,
+    corrected:'내일 우리 가족은 할머니 댁에 갈 것이다.',
+    explain:'‘내일’은 아직 오지 않은 때이므로 앞일을 나타내는 ‘갈 것이다’와 어울립니다.',
+    hint:'‘내일’은 언제를 가리키는 말인가요?' },
+  { id:'time-03', diag:'time', natural:true,
+    tokens:['지난주에','우리','반은','현장','체험','학습을','다녀왔다.'],
+    healthy:'‘지난주에’와 ‘다녀왔다’ 모두 지나간 일을 나타내어 서로 잘 맞습니다.' },
+
+  { id:'honor-01', diag:'honor', natural:false,
+    tokens:['선생님께서','우리에게','숙제를','내주었다.'],
+    bad:[0,3], fix:[3], options:['내주셨다.','내주었다.','내줄 것이다.'], answer:0,
+    corrected:'선생님께서 우리에게 숙제를 내주셨다.',
+    explain:'‘께서’로 높였으니 서술어도 ‘내주셨다’로 높여야 짝이 맞습니다.',
+    hint:'이 문장에서 높여야 할 분은 누구인가요?' },
+  { id:'honor-02', diag:'honor', natural:true,
+    tokens:['할아버지께서','거실에서','신문을','읽고','계신다.'],
+    healthy:'‘할아버지께서’와 ‘읽고 계신다’가 함께 높임을 나타내어 짝이 맞습니다.' },
+  { id:'honor-03', diag:'honor', natural:false,
+    tokens:['할머니께서','진지를','맛있게','먹었다.'],
+    bad:[0,3], fix:[3], options:['드셨다.','먹었다.','먹는다.'], answer:0,
+    corrected:'할머니께서 진지를 맛있게 드셨다.',
+    explain:'높여야 할 분의 행동이므로 ‘먹었다’ 대신 ‘드셨다’를 씁니다.',
+    hint:'‘진지’는 누구의 밥을 높여 부르는 말일까요?' },
+
+  { id:'nega-01', diag:'nega', natural:false,
+    tokens:['나는','그','음식을','별로','좋아한다.'],
+    bad:[3,4], fix:[4], options:['좋아하지 않는다.','좋아한다.','좋아했다.'], answer:0,
+    corrected:'나는 그 음식을 별로 좋아하지 않는다.',
+    explain:'‘별로’는 뒤에 ‘~않다’ 같은 부정하는 말을 데리고 다닙니다.',
+    hint:'‘별로’ 뒤에는 보통 어떤 말이 오나요?' },
+  { id:'nega-02', diag:'nega', natural:true,
+    tokens:['동생은','결코','거짓말을','하지','않는다.'],
+    healthy:'‘결코’와 ‘하지 않는다’가 서로를 부르는 짝으로 잘 쓰였습니다.' },
+  { id:'nega-03', diag:'nega', natural:false,
+    tokens:['오늘','아침에는','전혀','배가','고팠다.'],
+    bad:[2,4], fix:[4], options:['고프지 않았다.','고팠다.','고프다.'], answer:0,
+    corrected:'오늘 아침에는 전혀 배가 고프지 않았다.',
+    explain:'‘전혀’ 뒤에는 ‘~않다’가 와야 앞말과 뒷말의 짝이 맞습니다.',
+    hint:'‘전혀’라는 말이 어떤 표현을 기다리고 있는지 살펴보세요.' },
+
+  { id:'diary-01', diag:'diary', type:'diary', natural:false,
+    diaryTitle:'서준이의 하루 (10월 15일 목요일)',
+    diaryAsk:'일기 속에는 호응이 어긋난 문장이 3개 숨어 있습니다. 어색하다고 생각되는 문장을 눌러 표시해 보세요.',
+    sentences:[
+      { t:'오늘 아침 나는 여섯 시 반에 일어났다.', bad:false },
+      { t:'세수를 하고 밥을 먹은 뒤 학교 갈 준비를 했다.', bad:false },
+      { t:'학교에 가는 길에 정민이를 만나서 함께 걸어갔다.', bad:false },
+      { t:'어제 나는 도서관에서 재미있는 책을 빌릴 것이다.', bad:true, diag:'time',
+        corrected:'어제 나는 도서관에서 재미있는 책을 빌렸다.',
+        explain:'‘어제’는 지나간 때를 나타내므로 ‘빌릴 것이다’가 아니라 ‘빌렸다’로 써야 시간 표현과 서술어가 서로 어울립니다.' },
+      { t:'점심시간에는 짝과 함께 급식을 먹었다.', bad:false },
+      { t:'사실 오늘 급식 반찬은 별로 맛있었다.', bad:true, diag:'nega',
+        corrected:'사실 오늘 급식 반찬은 별로 맛있지 않았다.',
+        explain:'‘별로’ 다음에는 ‘~않다’와 같이 부정하는 말이 와야 앞말과 뒷말이 서로 어울립니다.' },
+      { t:'수업이 끝난 뒤에는 운동장에서 축구를 했다.', bad:false },
+      { t:'집에 돌아오니 할머니께서 마당에서 화분을 돌보고 계셨다.', bad:false },
+      { t:'저녁에는 할머니께서 내가 좋아하는 된장국을 끓였다.', bad:true, diag:'honor',
+        corrected:'저녁에는 할머니께서 내가 좋아하는 된장국을 끓이셨다.',
+        explain:'높여야 할 대상에게는 조사 ‘께서’와 서술어의 높임 표현 ‘-시-’를 함께 써야 합니다.' },
+      { t:'오늘 하루도 무사히 잘 보낸 것 같아 마음이 뿌듯했다.', bad:false }
+    ] }
+];
+
+/* ======================================================================
+   4. 상태
+   ====================================================================== */
+var S = {
+  screen:'home',
+  pro:{ stage:0, hint1:false, hint2:false },
+  first:{ judged:null, picked:[], swap:'간다', reaction:null },
+  ex:{},          /* 탐구 상태 */
+  curDiag:'comp',
+  openRef:null,
+  caseIdx:0,
+  cs:{},          /* 케이스 상태 */
+  seminarIdx:0, seminarStage:0
+};
+DIAGS.forEach(function(d){ S.ex[d.id]={ a:EXPLORE[d.id].a.init, b:EXPLORE[d.id].b.init, touched:0, tried:{}, pa:'', pb:'', done:false, visited:false }; });
+CASES.forEach(function(c,i){ S.cs[i]={ stage:0, judge:null, diag:null, marks:[], fix:null, msg:null }; });
+
+function allVisited(){ return DIAGS.every(function(d){ return S.ex[d.id].visited; }); }
+function visitedCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].visited) n++; }); return n; }
+
+/* ======================================================================
+   4b. 플레이어(레지던트 의사) 상태 — 사원증 · 치료 포인트(XP)
+   ====================================================================== */
+var PLAYER = { name:'', xp:0 };
+try{
+  var _savedName = localStorage.getItem('sc_player_name');
+  if(_savedName){ PLAYER.name=_savedName; PLAYER.xp = +(localStorage.getItem('sc_player_xp')||0) || 0; }
+}catch(e){}
+function savePlayer(){ try{ localStorage.setItem('sc_player_name',PLAYER.name); localStorage.setItem('sc_player_xp',PLAYER.xp); }catch(e){} }
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+}
+function addXP(n,label){
+  if(!n) return;
+  PLAYER.xp+=n; savePlayer();
+  var t=document.getElementById('xpToast');
+  if(t){
+    t.textContent='+'+n+' XP · '+(label||'');
+    t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+  }
+  paintIdBadge();
+}
+function paintIdBadge(){
+  var slot=document.getElementById('idBadgeSlot');
+  if(!slot) return;
+  if(!PLAYER.name){ slot.innerHTML=''; return; }
+  var dots=DIAGS.map(function(d){ return '<span class="sd'+(S.ex[d.id].done?' on':'')+'"></span>'; }).join('');
+  slot.innerHTML='<div class="id-badge">'+
+    '<span class="id-photo" aria-hidden="true">🩺</span>'+
+    '<span class="id-info"><span class="id-name">'+escapeHtml(PLAYER.name)+' 선생님</span><span class="id-role">문장 클리닉 인턴</span></span>'+
+    '<span class="id-xp">⭐ '+PLAYER.xp+'</span>'+
+    '<span class="stamp-dots" aria-hidden="true">'+dots+'</span>'+
+  '</div>';
+}
+
+/* ======================================================================
+   5. 헤더 · 진행 표시
+   ====================================================================== */
+var FLOW = [
+  { key:'first',  label:'진찰' },
+  { key:'explore',label:'탐구' },
+  { key:'chart',  label:'진단표' },
+  { key:'cases',  label:'처방' },
+  { key:'seminar',label:'세미나' },
+  { key:'summary',label:'정리' }
+];
+function flowKey(){
+  var s=S.screen;
+  if(s==='home'||s==='signup'||s==='prologue') return null;
+  if(s==='first') return 'first';
+  if(s==='hub'||s==='explore'||s==='result') return 'explore';
+  if(s==='chart') return 'chart';
+  if(s==='cases') return 'cases';
+  if(s==='seminar') return 'seminar';
+  if(s==='summary') return 'summary';
+  return null;
+}
+function paintHeader(){
+  var k=flowKey(), flow=document.getElementById('flow'), inner=document.getElementById('flowInner');
+  var counter=document.getElementById('counter');
+  if(!k){ flow.style.display='none'; counter.textContent=''; return; }
+  flow.style.display='';
+  var cur=0; FLOW.forEach(function(f,i){ if(f.key===k) cur=i; });
+  var html='';
+  FLOW.forEach(function(f,i){
+    var cls = i<cur ? 'done' : (i===cur ? 'now' : '');
+    var dot = i<cur ? '✓' : String(i+1);
+    if(i>0) html+='<span class="flow-line"></span>';
+    html+='<button type="button" class="flow-step '+cls+'" data-act="flow-jump" data-key="'+f.key+'" aria-current="'+(i===cur?'step':'false')+'"><span class="dot">'+dot+'</span>'+f.label+'</button>';
+  });
+  inner.innerHTML=html;
+
+  var c='';
+  if(S.screen==='explore') c='진단 '+(diagIndex(S.curDiag)+1)+' / 4';
+  else if(S.screen==='hub'||S.screen==='result') c='진단 '+visitedCount()+' / 4';
+  else if(S.screen==='cases') c='CASE '+pad(S.caseIdx+1)+' / '+CASES.length;
+  else if(S.screen==='seminar') c='세미나 자료';
+  else if(S.screen==='chart') c='진단서 작성 시간';
+  else if(S.screen==='first') c='첫 번째 진찰';
+  else if(S.screen==='summary') c='문장 건강검진 완료';
+  counter.textContent=c;
+}
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+/* ======================================================================
+   6. 공통 조각
+   ====================================================================== */
+function tone(d){ return 'style="--c:'+d.color+';--c-soft:'+d.soft+'"'; }
+function iconBox(d,size){
+  var s=size||42;
+  return '<span class="ico" style="width:'+s+'px;height:'+s+'px;background:'+d.soft+';color:'+d.color+'">'+ICON[d.id]+'</span>';
+}
+function fb(kind,title,body){
+  var ic = kind==='good' ? '✓' : (kind==='look' ? '🔎' : '🩺');
+  return '<div class="fb '+kind+'"><span class="ic">'+ic+'</span><span><b>'+title+'</b><br>'+body+'</span></div>';
+}
+function tokensHTML(tokens,onIdx,clickable){
+  return tokens.map(function(t,i){
+    var on = onIdx.indexOf(i)>=0 ? ' on' : '';
+    if(!clickable) return '<span class="token plain'+on+'">'+t+'</span>';
+    return '<button class="token'+on+'" data-act="tok" data-i="'+i+'" aria-pressed="'+(on?'true':'false')+'">'+t+'</button>';
+  }).join('');
+}
+function markSentence(tokens,idxList){
+  return tokens.map(function(t,i){ return idxList.indexOf(i)>=0 ? '<mark>'+t+'</mark>' : t; }).join(' ');
+}
+
+/* ======================================================================
+   7. 화면들
+   ====================================================================== */
+var V = {};
+
+/* --- 첫 화면 --- */
+V.home=function(){
+  return '<div class="hero"><div class="hero-inner">'+
+    '<div class="mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v5a4.5 4.5 0 0 0 9 0V3"/><path d="M4.5 3H6M13.5 3H15"/><path d="M10.5 12.5v2.5a4 4 0 0 0 8 0v-1.2"/><circle cx="18.5" cy="11.5" r="2"/></svg></div>'+
+    '<p class="kicker">문장 클리닉</p>'+
+    '<h1>어색한 문장을 치료하라!</h1>'+
+    '<p class="lead">문장 속 표현들이 서로 잘 어울리는지 살펴보고<br>수상한 문장의 원인을 찾아봅시다.</p>'+
+    '<button class="btn btn-primary" data-act="go" data-to="signup">문장 진단 시작</button>'+
+    '<div class="mission">오늘의 임무<strong>“문장이 자연스러워지는 비밀을 찾아라.”</strong></div>'+
+  '</div></div>';
+};
+
+/* --- 사원증 발급 --- */
+V.signup=function(){
+  var nm = PLAYER.name || '';
+  return '<div class="hero"><div class="hero-inner">'+
+    '<span class="chip live" style="margin-bottom:20px">🪪 인턴 사원증 발급</span>'+
+    '<h1 style="font-size:clamp(26px,4vw,36px);font-weight:800;letter-spacing:-.03em;margin:0 0 10px;line-height:1.3">문장 클리닉에 오신 것을 환영합니다</h1>'+
+    '<p class="lead" style="margin-bottom:26px">진찰을 시작하기 전에 이름을 입력하고<br>나만의 인턴 의사 사원증을 발급받으세요.</p>'+
+    '<div class="badge-print">'+
+      '<div class="bp-top">🩺 SENTENCE CLINIC · ID CARD</div>'+
+      '<div class="bp-photo" aria-hidden="true">🧑‍⚕️</div>'+
+      '<div class="bp-name" id="bpNamePreview">'+(nm?escapeHtml(nm)+' 선생님':'이름을 입력해 주세요')+'</div>'+
+      '<div class="bp-role">문장 클리닉 인턴 의사</div>'+
+      '<div class="bp-strip">본 사원증은 문장 진찰 임무 수행에 사용됩니다</div>'+
+    '</div>'+
+    '<div style="margin-top:22px"><input type="text" id="playerName" class="name-input" placeholder="이름을 입력하세요 (예: 김민준)" value="'+escapeHtml(nm)+'" maxlength="12"></div>'+
+    '<div style="margin-top:22px"><button class="btn btn-primary" data-act="signup-go">사원증 발급받고 시작하기 →</button></div>'+
+  '</div></div>';
+};
+
+/* --- 프롤로그 --- */
+V.prologue=function(){
+  var p=S.pro;
+
+  if(p.stage===0){
+    return '<div class="hero"><div class="hero-inner">'+
+      '<span class="chip live" style="margin-bottom:24px">🚨 긴급 환자 접수</span>'+
+      '<p class="pro-line" style="animation-delay:.05s">문장 클리닉에 이상한 문장들이 찾아왔습니다.</p>'+
+      '<p class="pro-line sub" style="animation-delay:.9s">그런데 어디가 아픈지는 아무도 모릅니다.</p>'+
+      '<p class="pro-line" style="animation-delay:1.8s">문장 의사가 되어 함께 알아봐요.</p>'+
+      '<div style="opacity:0;animation:rise 500ms ease 2.6s forwards;margin-top:34px">'+
+      '<button class="btn btn-primary" data-act="pro-next" data-n="1">무슨 일인지 알아보기 →</button></div>'+
+    '</div></div>';
+  }
+
+  if(p.stage===1){
+    return '<div class="stage narrow">'+
+      '<div class="eyebrow"><span class="chip live">🚑 문장 클리닉 응급실</span><span>접수 시간: 방금 전</span></div>'+
+      '<h1 class="screen-title">환자가 실려 왔습니다!</h1>'+
+      '<div class="card">'+
+        '<p class="section-q" style="margin-bottom:2px">삐뽀삐뽀— 접수창구에 다급한 목소리가 들려왔습니다.</p>'+
+        '<div class="speech">“사람들이 자꾸 저를 이상한 눈으로 쳐다봐요... 저, 어디가 아픈 걸까요?”</div>'+
+      '</div>'+
+      '<div class="card sentence-card">'+
+        '<div class="ba-tag" style="text-align:left;margin-bottom:14px">🩺 오늘의 첫 환자</div>'+
+        '<div class="sentence">'+tokensHTML(['나는','어제','도서관에','간다.'],[],false)+'</div>'+
+      '</div>'+
+      '<p class="screen-sub" style="text-align:center;margin-top:22px">겉보기엔 멀쩡해 보이는데... 어딘가 좀 이상합니다.</p>'+
+      '<div class="navrow"><button class="btn btn-ghost" data-act="pro-next" data-n="0">← 다시 보기</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="pro-next" data-n="2">함께 진찰해 볼까요? →</button></div>'+
+    '</div>';
+  }
+
+  return '<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">🩺 문장 클리닉 진찰</span><span>다 함께 생각해봐요</span></div>'+
+    '<h1 class="screen-title">문장을 소리 내어 읽어봅시다</h1>'+
+    '<div class="card">'+
+      '<p class="section-q">🔎 문장을 읽었을 때 어색하거나 이상하게 느껴지는 부분이 있나요?</p>'+
+      '<p class="section-help">짝과 함께 소리 내어 읽어보고 이야기해 봅시다.</p>'+
+      (p.hint1
+        ? fb('look','생각해 볼까요?','앞부분의 표현과 뒷부분의 표현이 잘 어울리지 않습니다.')
+        : '<button class="btn btn-ghost" data-act="pro-hint" data-n="1">힌트 살짝 보기</button>')+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="section-q">🧭 문장을 자연스럽게 고치려면 어떤 부분을 살펴보아야 할까요?</p>'+
+      '<p class="section-help">문장 속 표현들이 서로 어울리는지 짚어가며 생각해 봅시다.</p>'+
+      (p.hint2
+        ? fb('look','생각해 볼까요?','문장 속 표현들이 서로 알맞게 연결되어 있는지 살펴보아야 합니다.')
+        : '<button class="btn btn-ghost" data-act="pro-hint" data-n="2">힌트 살짝 보기</button>')+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="pro-next" data-n="1">← 이전</button><span class="spacer"></span>'+
+    '<button class="btn btn-primary" data-act="go" data-to="first">첫 번째 문장 진찰하기 →</button></div>'+
+  '</div>';
+};
+
+/* --- 활동 1: 첫 진찰 --- */
+V.first=function(){
+  var f=S.first, d=D('time');
+  var tokens=['나는','어제','도서관에',f.swap];
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip">CASE #00 · 접수실</span><span>현재 상태: 진찰 중</span></div>'+
+    '<h1 class="screen-title">첫 번째 환자가 들어왔습니다</h1>'+
+    '<p class="screen-sub">문장을 소리 내어 읽어 보세요. 읽으면서 이상한 느낌이 드는 곳이 있는지 살펴봅시다.</p>'+
+    '<div class="card sentence-card"><div class="sentence">'+tokensHTML(tokens, f.picked, f.judged!==null)+'</div>'+
+      (f.judged!==null && f.picked.length>0 ? '<div style="margin-top:6px"><span class="link-note">선택한 표현: '+f.picked.map(function(i){return tokens[i];}).join(' ↔ ')+'</span></div>' : '')+
+    '</div>';
+
+  if(f.judged===null){
+    html+='<div class="card"><p class="section-q">이 문장은 자연스럽게 느껴지나요?</p>'+
+      '<p class="section-help">맞히는 문제가 아닙니다. 지금 드는 느낌을 그대로 고르세요.</p>'+
+      '<div class="choice-row">'+
+      '<button class="choice" data-act="first-judge" data-v="nat"><span class="num">●</span>자연스럽다</button>'+
+      '<button class="choice" data-act="first-judge" data-v="odd"><span class="num">●</span>어색하다</button>'+
+      '</div></div>';
+  }else{
+    html+='<div class="card"><p class="section-q">어디가 어색하게 느껴졌나요?</p>'+
+      '<p class="section-help">위 문장에서 서로 어울리지 않는 것 같은 표현을 눌러 보세요. 두 개까지 고를 수 있습니다.</p>'+
+      (f.picked.length===2
+        ? fb('info','두 표현을 골랐군요.','이제 뒤쪽 표현을 직접 바꾸어 보며 무엇이 달라지는지 확인해 봅시다.')
+        : '<p class="section-help" style="margin:0;color:var(--text-muted)">문장 속 단어를 눌러 표시할 수 있습니다.</p>')+
+      '</div>';
+
+    html+='<div class="card"><p class="section-q">표현을 바꾸어 볼까요?</p>'+
+      '<p class="section-help">나는 어제 도서관에 …</p>'+
+      '<div class="choice-row">'+
+      ['간다','갔다','갈 것이다'].map(function(o){
+        return '<button class="choice'+(f.swap===o?' sel':'')+'" data-act="first-swap" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>';
+      }).join('')+'</div>';
+
+    if(f.swap!=='간다'){
+      html+='<div class="ba"><div class="ba-box"><div class="ba-tag">처음 문장</div><div class="ba-text">나는 어제 도서관에 <mark>간다.</mark></div></div>'+
+        '<div class="ba-arrow">→</div>'+
+        '<div class="ba-box after"><div class="ba-tag">바꾼 문장</div><div class="ba-text">나는 어제 도서관에 <mark>'+f.swap+'.</mark></div></div></div>';
+      html+='<div style="margin-top:26px"><p class="section-q">바꾸고 나니 어떤 점이 달라졌나요?</p>'+
+        '<div class="choice-row" style="margin-top:12px">'+
+        ['더 자연스러워졌다.','더 어색해졌다.','잘 모르겠다.'].map(function(o){
+          return '<button class="choice'+(f.reaction===o?' sel':'')+'" data-act="first-react" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>';
+        }).join('')+'</div>';
+      if(f.reaction){
+        html+=fb('info','좋은 관찰이에요.','정답을 맞히는 것보다 두 문장을 <b>비교해 본 경험</b>이 더 중요합니다. 이제 진료실로 가서 이런 문장들을 더 살펴봅시다.');
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+
+  html+='<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="prologue">← 이전</button><span class="spacer"></span>'+
+    '<button class="btn btn-primary" data-act="go" data-to="hub">진료실로 들어가기 →</button></div>';
+  return html+'</div>';
+};
+
+/* --- 진료실 선택(허브) --- */
+V.hub=function(){
+  var html='<div class="stage">'+
+    '<div class="eyebrow"><span class="chip">문장 클리닉 / 진료실</span><span>돌아본 진단실 '+visitedCount()+' / 4</span></div>'+
+    '<h1 class="screen-title">네 개의 진료실을 모두 돌아봅시다</h1>'+
+    '<p class="screen-sub">진료실마다 환자 문장이 한 명씩 기다리고 있습니다. 표현을 직접 바꾸어 보며 <b>어떤 표현끼리 서로 어울리는지</b> 찾아보세요. 순서는 자유롭게 정해도 됩니다.</p>'+
+    '<div class="floor-board"><span class="fb-ico" aria-hidden="true">🏥</span><div><div class="fb-tt">문장 클리닉 3층 · 진단실 안내도</div><div class="fb-sub">빨간불🔴인 방을 방문해 진단을 완료하면 초록불🟢로 바뀝니다</div></div></div>'+
+    '<div class="grid4 floor-map">'+
+      DIAGS.map(function(d){
+        var done=S.ex[d.id].done;
+        return '<button class="dcard room-plaque" data-act="open-diag" data-id="'+d.id+'" data-done="'+(done?1:0)+'">'+
+          '<span class="rp-light" aria-hidden="true"></span>'+
+          iconBox(d)+
+          '<span class="rp-doorno">'+d.room+'</span>'+
+          '<span class="nm">'+(done?d.name:'이름 없는 증상 '+d.no)+'</span>'+
+          '<span class="pr">'+(done?d.pair:'아직 진단명이 붙지 않았습니다')+'</span>'+
+          '<span class="state">'+(done?'✓ 탐구 완료':'진찰하러 가기 →')+'</span>'+
+          (!done ? '<span class="dcard-xp">+20 XP</span>' : '')+
+        '</button>';
+      }).join('')+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="first">← 이전</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="result"'+(allVisited()?'':' disabled')+'>'+
+      (allVisited()?'탐구 결과 보기 →':'네 진료실을 모두 돌아보면 열립니다')+'</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 탐구 화면 --- */
+V.explore=function(){
+  var d=D(S.curDiag), e=EXPLORE[d.id], st=S.ex[d.id];
+  var key=st.a+'|'+st.b, combo=e.combos[key];
+  var cur=[]; e.parts.forEach(function(p){ cur.push(p.slot ? (p.slot==='a'?st.a:st.b) : p.t); });
+  var curSentence=cur.join(' ');
+  var idx=diagIndex(d.id);
+
+  var sentenceHTML=e.parts.map(function(p){
+    if(!p.slot) return '<span class="token plain">'+p.t+'</span>';
+    return '<span class="slot">'+(p.slot==='a'?st.a:st.b)+'</span>';
+  }).join(' ');
+
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip tint">'+d.room+'</span><span>'+e.caseNo+' · 현재 상태: 진단 중</span></div>'+
+    '<h1 class="screen-title">'+e.ask+'</h1>'+
+    '<div class="card sentence-card"><div class="sentence">'+sentenceHTML+'</div>'+
+      (st.touched? '' : '<p class="section-help" style="margin:22px 0 0">지금 이 문장, 두 표현이 서로 잘 어울리나요?</p>')+
+    '</div>'+
+
+    '<div class="card">'+
+      '<p class="section-q">표현을 골라 문장을 바꿔 보세요</p>'+
+      '<p class="section-help">누르면 문장이 바로 바뀝니다. 여러 가지 조합을 만들어 보세요.</p>'+
+      '<div class="slot-group"><p class="slot-label"><span class="bar"></span>'+e.a.label+'</p><div class="choice-row">'+
+        e.a.options.map(function(o){ return '<button class="choice'+(st.a===o?' sel':'')+'" data-act="ex" data-k="a" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>'; }).join('')+
+      '</div></div>'+
+      '<div class="slot-group"><p class="slot-label"><span class="bar"></span>'+e.b.label+'</p><div class="choice-row">'+
+        e.b.options.map(function(o){ return '<button class="choice'+(st.b===o?' sel':'')+'" data-act="ex" data-k="b" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>'; }).join('')+
+      '</div></div>'+
+      (st.touched && combo ? fb(combo.ok?'good':'look', combo.ok?'자연스럽게 어울립니다':'한 번 더 살펴볼까요?', combo.m) : '')+
+      (st.touched ? '<div class="ba"><div class="ba-box"><div class="ba-tag">처음 문장</div><div class="ba-text">'+e.before+'</div></div>'+
+        '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">지금 문장</div><div class="ba-text">'+curSentence+'</div></div></div>' : '')+
+    '</div>';
+
+  var triedCount=Object.keys(st.tried).length;
+  if(triedCount<2){
+    html+='<p class="section-help" style="text-align:center;margin:22px 0 0">조합을 두 가지 이상 만들어 보면 <b>발견한 짝을 적는 칸</b>이 열립니다.</p>';
+  }
+  if(triedCount>=2){
+    html+='<div class="card reveal">'+
+      '<p class="section-q">내가 발견한 짝</p>'+
+      '<p class="section-help">서로 어울려야 하는 두 표현을 적어 보세요. 낱말을 그대로 써도 좋고, 무엇을 나타내는 말인지로 써도 좋습니다.</p>'+
+      '<div class="pair"><input type="text" id="pa" value="'+st.pa+'" placeholder="예: '+e.a.options[0]+'" aria-label="첫 번째 표현">'+
+      '<span class="sym">↔</span>'+
+      '<input type="text" id="pb" value="'+st.pb+'" placeholder="예: '+e.b.options[0]+'" aria-label="두 번째 표현">'+
+      '<button class="btn btn-soft" data-act="pair-save" style="height:52px">이 짝으로 기록하기</button></div>';
+    if(st.done){
+      html+='<div class="reveal" style="margin-top:24px;border-top:1px solid var(--border);padding-top:24px">'+
+        '<p class="section-help" style="margin-bottom:12px">'+e.close+'</p>'+
+        '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--c-soft);border-radius:16px;padding:20px">'+
+          iconBox(d,44)+
+          '<div><div style="font-size:13.5px;font-weight:700;color:'+d.color+'">이 증상의 진단명</div>'+
+          '<div style="font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1.3">'+d.name+'</div>'+
+          '<div style="font-size:15.5px;color:var(--text-secondary);font-weight:600;margin-top:2px">살펴볼 짝 · '+d.pair+'</div></div>'+
+        '</div></div>';
+    }
+    html+='</div>';
+  }
+
+  var next = idx<3 ? DIAGS[idx+1] : null;
+  html+='<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="hub">← 진료실 목록</button><span class="spacer"></span>'+
+    (next ? '<button class="btn btn-primary" data-act="open-diag" data-id="'+next.id+'">다음 진찰하기 →</button>'
+          : '<button class="btn btn-primary" data-act="go" data-to="'+(allVisited()?'result':'hub')+'">'+(allVisited()?'탐구 결과 보기 →':'진료실 목록으로 →')+'</button>')+
+  '</div></div>';
+  return html;
+};
+
+/* --- 탐구 결과 --- */
+V.result=function(){
+  var html='<div class="stage">'+
+    '<div class="eyebrow"><span class="chip live">진단 완료</span><span>오늘 발견한 호응 관계</span></div>'+
+    '<h1 class="screen-title">문장 진단 완료!</h1>'+
+    '<p class="screen-sub">문장 속 표현에는 <b>서로 잘 어울리는 짝</b>이 있다는 사실을 발견했습니다. 여러분이 찾아낸 네 가지 증상에 이름을 붙였습니다.</p>'+
+    '<div class="grid4">'+
+      DIAGS.map(function(d){
+        var st=S.ex[d.id];
+        return '<div class="dcard" style="cursor:default">'+iconBox(d)+
+          '<span class="no">'+d.no+'</span>'+
+          '<span class="nm">'+d.name+'</span>'+
+          '<span class="pr">'+d.pair+'</span>'+
+          (st.pa||st.pb ? '<span class="state" style="color:var(--text-secondary)">내가 적은 짝 · '+(st.pa||'—')+' ↔ '+(st.pb||'—')+'</span>' : '')+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<div class="card" style="margin-top:22px;text-align:center">'+
+      '<p style="font-size:21px;font-weight:700;letter-spacing:-.02em;margin:0">이제 문장 치료를 시작합니다.</p>'+
+      '<p class="section-help" style="margin:8px 0 0">그 전에 종이 진단서를 먼저 완성해 봅시다.</p>'+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="hub">← 진료실 목록</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="chart">문장 진단서 쓰러 가기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 진단서 참고 화면 --- */
+V.chart=function(){
+  var html='<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">진단서 작성 시간</span><span>화면은 참고 자료입니다</span></div>'+
+    '<h1 class="screen-title">문장 진단서를 완성해 봅시다</h1>'+
+    '<p class="screen-sub">종이 진단서에 네 가지 진단명과 살펴볼 짝을 적고, <b>예시 문장은 직접 만들어</b> 써넣으세요. 진단명을 누르면 오늘 탐구한 사례를 다시 볼 수 있습니다.</p>'+
+    '<div class="paper"><span class="ic">✎</span><span>이 화면은 진단서를 대신 써 주지 않습니다. 예시 문장은 여러분이 직접 만들어 종이에 적습니다.</span></div>'+
+    '<div style="margin-top:22px">'+
+    DIAGS.map(function(d){
+      var e=EXPLORE[d.id], st=S.ex[d.id], open=S.openRef===d.id;
+      var s='<div class="ref-row" '+tone(d)+'>'+
+        '<button class="ref-head" data-act="ref" data-id="'+d.id+'" aria-expanded="'+open+'">'+iconBox(d,38)+
+        '<span><span class="ref-name">'+d.name+'</span><br><span class="ref-pair">'+d.pair+'</span></span>'+
+        '<span class="ref-open">'+(open?'닫기 ▲':'사례 보기 ▼')+'</span></button>';
+      if(open){
+        var goodKey=null;
+        for(var k in e.combos){ if(e.combos[k].ok){ goodKey=k; break; } }
+        var ga=goodKey.split('|')[0], gb=goodKey.split('|')[1];
+        s+='<div class="ref-body">'+
+          '<p class="ref-line" style="margin-top:16px">탐구한 문장</p>'+
+          '<p class="ref-ex">'+e.before+'</p>'+
+          '<p class="ref-line">서로 어울려야 하는 짝 · <b style="color:'+d.color+'">'+ga+' ↔ '+gb+'</b></p>'+
+          (st.pa||st.pb ? '<div class="mine">내가 적은 짝 · <b>'+(st.pa||'—')+' ↔ '+(st.pb||'—')+'</b></div>' : '')+
+          '<div class="mine">종이 진단서에는 <b>내가 만든 예시 문장</b>을 적습니다.</div>'+
+        '</div>';
+      }
+      return s+'</div>';
+    }).join('')+
+    '</div>'+
+    '<div class="card" style="margin-top:22px"><p class="section-q">종이 진단서에 적을 내용</p>'+
+      '<table class="wk"><thead><tr><th>진단명</th><th>살펴볼 짝</th><th>내가 만든 예시</th></tr></thead><tbody>'+
+      DIAGS.map(function(d){ return '<tr><td>'+d.name+'</td><td>'+d.pair+'</td><td class="blank">직접 써 봅시다</td></tr>'; }).join('')+
+      '</tbody></table></div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="result">← 이전</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="cases">문장 처방하러 가기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 활동 2: 처방 --- */
+V.cases=function(){
+  var i=S.caseIdx, c=CASES[i], st=S.cs[i];
+  if(c.type==='diary') return V.diaryCase(i,c,st);
+  var d=D(c.diag);
+  var toneStr = st.stage>=2 ? tone(d) : 'style="--c:#2563EB;--c-soft:#E8F0FF"';
+
+  var html='<div class="stage narrow" '+toneStr+'>'+
+    '<div class="eyebrow"><span class="chip">CASE '+pad(i+1)+'</span><span>현재 상태: '+
+      (st.stage===0?'접수':(st.judge==='nat'&&c.natural?'진료 종료':'치료 중'))+'</span></div>'+
+    '<div class="card sentence-card"><div class="sentence">'+
+      tokensHTML(c.tokens, st.stage===2?st.marks:(st.stage>=3?(c.bad||[]):[]), st.stage===2)+
+    '</div></div>';
+
+  /* 0. 정상 / 치료 필요 */
+  html+='<div class="card"><p class="section-q">이 문장은 건강한가요?</p>'+
+    '<p class="section-help">모둠에서 먼저 이야기를 나눈 뒤, 모둠의 판단을 눌러 주세요.</p>'+
+    '<div class="choice-row">'+
+    '<button class="choice'+(st.judge==='nat'?' sel':'')+'" data-act="c-judge" data-v="nat"><span class="num">정</span>정상</button>'+
+    '<button class="choice'+(st.judge==='fix'?' sel':'')+'" data-act="c-judge" data-v="fix"><span class="num">치</span>치료 필요</button>'+
+    '</div>'+(st.stage===0?(st.msg||''):'')+'</div>';
+
+  /* 1. 진단명 선택 */
+  if(st.stage>=1 && !c.natural && st.judge==='fix'){
+    html+='<div class="card reveal"><p class="section-q">어디가 이상할까요?</p>'+
+      '<p class="section-help">진단명을 하나 고르세요.</p>'+
+      '<div class="choice-row" style="flex-direction:column">'+
+      DIAGS.map(function(dd,n){
+        var sel = st.diag===dd.id;
+        return '<button class="choice wide'+(sel?' sel':'')+'" data-act="c-diag" data-id="'+dd.id+'" style="--c:'+dd.color+';--c-soft:'+dd.soft+'">'+
+          '<span class="num">'+(n+1)+'</span>'+dd.name+
+          '<span style="margin-left:auto;font-size:14.5px;font-weight:600;color:var(--text-secondary)">'+dd.pair+'</span></button>';
+      }).join('')+'</div>'+(st.stage===1?(st.msg||''):'')+'</div>';
+  }
+
+  /* 2. 어색한 부분 표시 */
+  if(st.stage>=2){
+    html+='<div class="card reveal"><p class="section-q">어색한 부분을 표시해 봅시다</p>'+
+      '<p class="section-help">위 문장에서 서로 어울리지 않는 표현을 눌러 표시하세요. 표시한 곳은 처방전에도 똑같이 옮겨 적습니다.</p>'+
+      (st.stage===2
+        ? '<button class="btn btn-soft" data-act="c-mark-done">표시 완료</button>'
+        : fb('info','표시한 곳','문장에서 '+(c.bad||[]).map(function(n){return '‘'+c.tokens[n]+'’';}).join('와 ')+'가 서로 어긋난 짝이었습니다.'))+
+      (st.stage===2 ? (st.msg||'') : '')+'</div>';
+  }
+
+  /* 3. 올바른 표현 고르기 */
+  if(st.stage>=3){
+    html+='<div class="card reveal"><p class="section-q">올바른 표현으로 고쳐 봅시다</p>'+
+      '<p class="section-help">'+c.tokens.slice(0, c.fix[0]).join(' ')+' …</p>'+
+      '<div class="choice-row">'+
+      c.options.map(function(o,n){
+        return '<button class="choice'+(st.fix===n?' sel':'')+'" data-act="c-fix" data-n="'+n+'"><span class="tick">✓</span>'+o+'</button>';
+      }).join('')+'</div>'+(st.stage===3?(st.msg||''):'')+'</div>';
+  }
+
+  /* 4. 치료 결과 */
+  if(st.stage>=4){
+    html+='<div class="card reveal"><p class="section-q">치료 결과</p>'+
+      '<div class="ba" style="margin-top:14px"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+markSentence(c.tokens,c.bad)+'</div></div>'+
+      '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+c.corrected+'</div></div></div>'+
+      fb('good','진단 성공!',c.explain)+
+      '<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>왜 이렇게 고쳤는지 모둠의 말로 처방전에 적은 뒤 다음 환자로 넘어갑니다.</span></div>'+
+    '</div>';
+  }
+
+  /* 정상 문장 처리 */
+  if(c.natural && st.judge==='nat'){
+    html+='<div class="card reveal">'+fb('good','진단 성공! 이 문장은 건강합니다.',c.healthy)+
+      '<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>처방전의 ‘정상’ 칸에 표시하고, 왜 정상인지 한 문장으로 적어 봅시다.</span></div></div>';
+  }
+
+  html+='<div class="navrow">'+
+    '<button class="btn btn-ghost" data-act="c-prev">← 이전</button><span class="spacer"></span>'+
+    (i<CASES.length-1
+      ? '<button class="btn btn-primary" data-act="c-next">다음 환자 →</button>'
+      : '<button class="btn btn-primary" data-act="go" data-to="seminar">세미나 열러 가기 →</button>')+
+  '</div></div>';
+  return html;
+};
+
+/* --- 활동 2 보너스: 일기 속 오류 찾기 --- */
+V.diaryCase=function(i,c,st){
+  var badIdx=[]; c.sentences.forEach(function(s,idx){ if(s.bad) badIdx.push(idx); });
+  var revealed = st.stage>=1;
+
+  var html='<div class="stage narrow" style="--c:#2563EB;--c-soft:#E8F0FF">'+
+    '<div class="eyebrow"><span class="chip live">종합 처방 · CASE '+pad(i+1)+'</span><span>현재 상태: '+(revealed?'진단 완료':'진료 중')+'</span></div>'+
+    '<h1 class="screen-title">'+c.diaryTitle+'</h1>'+
+    '<p class="screen-sub">'+c.diaryAsk+'</p>'+
+    '<div class="card"><div class="diary-text">'+
+      c.sentences.map(function(s,idx){
+        var marked = st.marks.indexOf(idx)>=0;
+        if(revealed){
+          return '<span class="diary-sent'+(s.bad?' bad-reveal':'')+'">'+s.t+'</span>';
+        }
+        return '<button type="button" class="diary-sent'+(marked?' on':'')+'" data-act="d-mark" data-i="'+idx+'">'+s.t+'</button>';
+      }).join(' ')+
+    '</div></div>';
+
+  if(!revealed){
+    html+='<div class="card"><p class="section-q">선택한 문장 · '+st.marks.length+' / 3</p>'+
+      '<p class="section-help">어색하다고 생각하는 문장을 정확히 3개 고른 뒤 확인해 보세요.</p>'+
+      (st.msg||'')+
+      '<button class="btn btn-soft" data-act="d-check"'+(st.marks.length===3?'':' disabled')+'>확인하기</button>'+
+    '</div>';
+  } else {
+    html+='<div class="card reveal">'+fb('good','정확히 찾았어요!','일기 속에서 서로 어울리지 않는 표현이 있는 문장 3개를 모두 찾았습니다.')+'</div>';
+    badIdx.forEach(function(idx){
+      var s=c.sentences[idx], sd=D(s.diag);
+      html+='<div class="card reveal" '+tone(sd)+'>'+
+        '<p class="section-q">'+(idx+1)+'번째 문장 · <span style="color:'+sd.color+'">'+sd.name+'</span></p>'+
+        '<div class="ba"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+s.t+'</div></div>'+
+        '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+s.corrected+'</div></div></div>'+
+        fb('info','왜 이렇게 고쳤을까요?',s.explain)+
+      '</div>';
+    });
+    html+='<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>세 문장을 왜 그렇게 고쳤는지 모둠의 말로 처방전에 정리해 봅시다.</span></div>';
+  }
+
+  html+='<div class="navrow">'+
+    '<button class="btn btn-ghost" data-act="c-prev">← 이전</button><span class="spacer"></span>'+
+    (i<CASES.length-1
+      ? '<button class="btn btn-primary" data-act="c-next">다음 환자 →</button>'
+      : '<button class="btn btn-primary" data-act="go" data-to="seminar">세미나 열러 가기 →</button>')+
+  '</div></div>';
+  return html;
+};
+
+/* --- 활동 3: 세미나 --- */
+V.seminar=function(){
+  var list=CASES.filter(function(c){ return !c.natural && c.type!=='diary'; });
+  var c=list[S.seminarIdx], d=D(c.diag), stg=S.seminarStage;
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip live">문장 클리닉 세미나</span><span>오늘의 대표 환자</span></div>'+
+    '<div class="pill-nav" style="margin-top:18px">'+
+      list.map(function(x,n){ return '<button class="pill'+(n===S.seminarIdx?' on':'')+'" data-act="sem-pick" data-n="'+n+'">'+pad(n+1)+'</button>'; }).join('')+
+    '</div>'+
+    '<div class="card seminar-case"><div class="sentence">'+tokensHTML(c.tokens, stg>=1?c.bad:[], false)+'</div></div>'+
+    '<div class="card">'+
+      (stg>=1
+        ? '<div class="reveal" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:var(--text-secondary)">진단명</span>'+
+          '<span style="display:inline-flex;align-items:center;gap:10px;background:var(--c-soft);color:var(--c);padding:10px 18px;border-radius:14px;font-size:20px;font-weight:700">'+ICON[d.id].replace('<svg','<svg style="width:20px;height:20px"')+d.name+'</span>'+
+          '<span style="font-size:15.5px;color:var(--text-secondary);font-weight:600">'+d.pair+'</span></div>'
+        : '<button class="btn btn-soft" data-act="sem-stage" data-n="1">진단명 공개</button>')+
+      (stg>=2
+        ? '<div class="ba reveal" style="margin-top:22px"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+markSentence(c.tokens,c.bad)+'</div></div>'+
+          '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+c.corrected+'</div></div></div>'
+        : (stg>=1 ? '<div style="margin-top:20px"><button class="btn btn-soft" data-act="sem-stage" data-n="2">치료 후 문장 공개</button></div>' : ''))+
+      '<p class="seminar-q">왜 이렇게 치료했을까요?</p>'+
+      (stg>=3 ? '<div class="reveal">'+fb('info','발표를 들은 뒤 확인하기',c.explain)+'</div>'
+              : (stg>=2 ? '<div style="text-align:center;margin-top:18px"><button class="btn btn-ghost" data-act="sem-stage" data-n="3">모둠 발표 뒤 확인하기</button></div>' : ''))+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="cases">← 처방으로</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="summary">오늘 배운 것 정리하기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 정리 --- */
+V.summary=function(){
+  var html='<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">문장 건강검진 완료</span></div>'+
+    '<h1 class="screen-title">오늘 발견한 네 가지 짝</h1>'+
+    '<div class="card"><div class="sum-list">'+
+      DIAGS.map(function(d){
+        return '<div class="sum-item">'+iconBox(d,34)+'<span>'+d.pair+'</span>'+
+          '<span style="margin-left:auto;font-size:14.5px;font-weight:600;color:var(--text-secondary)">'+d.name+'</span></div>';
+      }).join('')+
+    '</div>'+
+    '<p class="sum-final">문장 속 표현은 서로 잘 어울리는 짝을 이루어야 합니다.</p></div>'+
+    '<div class="card"><p class="section-q">문장을 쓸 때 무엇을 확인하면 좋을까요?</p>'+
+      '<p class="section-help">오늘 배운 것을 자신의 말로 적어 보세요. 적은 내용은 저장되지 않으니, 발표하거나 공책에 옮겨 적습니다.</p>'+
+      '<textarea class="note" id="finalNote" placeholder="예: 문장을 쓴 뒤에 주어와 서술어가 어울리는지 다시 읽어 본다."></textarea></div>'+
+    '<div class="cert-card" style="margin-top:22px">'+
+      '<div class="cert-seal" aria-hidden="true">🏅</div>'+
+      '<div class="cert-title">Sentence Clinic · Certificate</div>'+
+      '<div class="cert-name">'+(PLAYER.name?escapeHtml(PLAYER.name)+' 선생님':'이름 없는 의사')+'</div>'+
+      '<div class="cert-line">위 사람은 문장 클리닉에서 네 가지 호응 관계를 모두 진단하고<br>어색한 문장을 성공적으로 치료하였기에 이 자격증을 드립니다.</div>'+
+      '<div class="cert-score">누적 치료 포인트 <b>'+PLAYER.xp+'</b> XP</div>'+
+      '<div class="cert-badges">'+
+        DIAGS.map(function(d){ var on=S.ex[d.id].done; return '<div class="cert-badge '+(on?'on':'off')+'" title="'+d.name+'">'+ICON[d.id]+'</div>'; }).join('')+
+        '<div class="cert-badge '+(GAMES.some(function(g){return BEST[g.id]>0;})?'on':'off')+'" title="미니게임 클리어">🎮</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="seminar">← 세미나</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="restart">처음으로</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* ======================================================================
+   8. 미니게임 — 문장호응 산성비
+   ====================================================================== */
+var GAMES = [
+  { id:'rain', icon:'🌧️', name:'문장호응 산성비', tag:'타임어택 · 60초',
+    desc:'하늘에서 문장이 쏟아집니다. 호응이 어긋난 문장만 재빨리 눌러 터뜨리고, 자연스러운 문장은 그냥 흘려보내세요!' },
+  { id:'match', icon:'🔪', name:'수술실 짝맞추기', tag:'메모리 · 짝 맞추기',
+    desc:'카드를 뒤집어 서로 어울리는 표현의 짝을 찾아보세요. 적은 시도로 모두 맞히면 명의로 인정받습니다.' },
+  { id:'quiz', icon:'🚑', name:'응급실 골든타임 퀴즈', tag:'퀴즈 · 45초',
+    desc:'응급 환자 문장이 쉴 새 없이 들어옵니다! 빈칸에 알맞은 표현을 빠르게 골라 골든타임을 놓치지 마세요.' },
+  { id:'xray', icon:'🩻', name:'엑스레이 판독', tag:'순발력 · 목숨 3개',
+    desc:'엑스레이 필름 속 문장에서 호응이 어긋난 단어를 제한 시간 안에 정확히 짚어내세요. 라운드가 지날수록 빨라집니다.' }
+];
+var BEST = {};
+GAMES.forEach(function(g){ try{ BEST[g.id]=+(localStorage.getItem('sc_'+g.id+'_best')||0)||0; }catch(e){ BEST[g.id]=0; } });
+var RAIN_POOL_BASE = [
+  {t:'내 꿈은 훌륭한 화가가 되는 것이다.', bad:false},
+  {t:'내 꿈은 훌륭한 화가가 되고 싶다.', bad:true},
+  {t:'내가 가장 좋아하는 과목은 수학이다.', bad:false},
+  {t:'내가 가장 좋아하는 과목은 수학을 좋아한다.', bad:true},
+  {t:'우리 학교의 자랑은 넓은 운동장이다.', bad:false},
+  {t:'우리 학교의 자랑은 운동장이 넓다.', bad:true},
+  {t:'나는 어제 친구와 놀이터에서 놀았다.', bad:false},
+  {t:'나는 어제 친구와 놀이터에서 논다.', bad:true},
+  {t:'내일 우리 가족은 할머니 댁에 갈 것이다.', bad:false},
+  {t:'내일 우리 가족은 할머니 댁에 갔다.', bad:true},
+  {t:'지난주에 우리 반은 박물관을 다녀왔다.', bad:false},
+  {t:'지난주에 우리 반은 박물관을 다녀올 것이다.', bad:true},
+  {t:'할아버지께서 거실에서 신문을 읽고 계신다.', bad:false},
+  {t:'할아버지께서 거실에서 신문을 읽는다.', bad:true},
+  {t:'할머니께서 진지를 맛있게 드셨다.', bad:false},
+  {t:'할머니께서 밥을 맛있게 먹었다.', bad:true},
+  {t:'선생님께서 우리에게 숙제를 내주셨다.', bad:false},
+  {t:'선생님이 우리에게 숙제를 내주었다.', bad:true},
+  {t:'동생은 결코 거짓말을 하지 않는다.', bad:false},
+  {t:'동생은 결코 거짓말을 한다.', bad:true},
+  {t:'오늘 아침에는 전혀 배가 고프지 않았다.', bad:false},
+  {t:'오늘 아침에는 전혀 배가 고팠다.', bad:true},
+  {t:'그 음식은 별로 맵지 않다.', bad:false},
+  {t:'그 음식은 별로 맵다.', bad:true}
+];
+
+/* 받침 유무에 따라 조사를 골라주는 도우미 (문제 문장을 규칙 기반으로 대량 생성할 때 사용) */
+function hasBatchim(word){
+  var ch=word.charCodeAt(word.length-1);
+  if(ch<0xAC00||ch>0xD7A3) return false;
+  return (ch-0xAC00)%28!==0;
+}
+function iGa(w){ return hasBatchim(w)?'이':'가'; }
+function eunNeun(w){ return hasBatchim(w)?'은':'는'; }
+function eulReul(w){ return hasBatchim(w)?'을':'를'; }
+
+/* 주술호응 */
+function buildCompPool(){
+  var out=[];
+  var names=['서준','지우','민재','하은','도윤'];
+  var jobs=['화가','의사','과학자','요리사','디자이너','수의사','사진작가','건축가','프로그래머','만화가'];
+  names.forEach(function(name){
+    jobs.forEach(function(job){
+      var p=iGa(job);
+      out.push({ t:name+'의 꿈은 훌륭한 '+job+p+' 되는 것이다.', bad:false });
+      out.push({ t:name+'의 꿈은 훌륭한 '+job+p+' 되고 싶다.', bad:true });
+    });
+  });
+  var tuples=[['과목','수학'],['과목','과학'],['과목','체육'],['계절','여름'],['계절','겨울'],
+    ['음식','떡볶이'],['음식','피자'],['운동','축구'],['운동','수영'],['색깔','파란색'],
+    ['동물','강아지'],['동물','고양이'],['노래','동요'],['요일','금요일'],['영화','만화 영화']];
+  var phrasesB=['내가 가장 좋아하는','우리 반 친구들이 가장 좋아하는'];
+  phrasesB.forEach(function(ph){
+    tuples.forEach(function(tp){
+      var cat=tp[0], item=tp[1];
+      out.push({ t:ph+' '+cat+eunNeun(cat)+' '+item+'이다.', bad:false });
+      out.push({ t:ph+' '+cat+eunNeun(cat)+' '+item+eulReul(item)+' 좋아한다.', bad:true });
+    });
+  });
+  var places=['운동장','도서관','미술실','급식실','강당','놀이터','체육관','과학실'];
+  var phrasesC=['우리 학교의 자랑은','우리 반의 자랑은'];
+  phrasesC.forEach(function(ph){
+    places.forEach(function(pl){
+      out.push({ t:ph+' 넓은 '+pl+'이다.', bad:false });
+      out.push({ t:ph+' 넓은 '+pl+eulReul(pl)+' 가지고 있다.', bad:true });
+    });
+  });
+  return out;
+}
+
+/* 시간호응 */
+function buildTimePool(){
+  var out=[];
+  var verbs=[
+    {obj:'놀이터에서 신나게', past:'놀았다.', pres:'논다.', fut:'놀 것이다.'},
+    {obj:'도서관에서 책을', past:'읽었다.', pres:'읽는다.', fut:'읽을 것이다.'},
+    {obj:'스케치북에 그림을', past:'그렸다.', pres:'그린다.', fut:'그릴 것이다.'},
+    {obj:'방을 깨끗이', past:'청소했다.', pres:'청소한다.', fut:'청소할 것이다.'},
+    {obj:'동네를 한 바퀴', past:'걸었다.', pres:'걷는다.', fut:'걸을 것이다.'}
+  ];
+  var pastTimes=['어제','지난주에','그저께'];
+  var futTimes=['내일','다음 주에','모레'];
+  var subjPast=['나는','지훈이는'];
+  var subjFut=['우리 반은','동생은'];
+  var k=0;
+  subjPast.forEach(function(subj){
+    verbs.forEach(function(v){
+      pastTimes.forEach(function(tw){
+        var wrong=(k%2===0)?v.fut:v.pres;
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.past, bad:false });
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+wrong, bad:true });
+        k++;
+      });
+    });
+  });
+  subjFut.forEach(function(subj){
+    verbs.forEach(function(v){
+      futTimes.forEach(function(tw){
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.fut, bad:false });
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.past, bad:true });
+      });
+    });
+  });
+  return out;
+}
+
+/* 높임호응 */
+function buildHonorPool(){
+  var out=[];
+  var elders=['할머니','할아버지','선생님','교장 선생님','외할머니','외할아버지','이모할머니'];
+  var combos=[
+    {obj:'진지를 맛있게', hon:'드셨다.', plain:'먹었다.'},
+    {obj:'낮잠을', hon:'주무셨다.', plain:'잤다.'},
+    {obj:'거실에', hon:'계셨다.', plain:'있었다.'},
+    {obj:'우리에게 옛날이야기를', hon:'말씀하셨다.', plain:'말했다.'},
+    {obj:'나에게 용돈을', hon:'주셨다.', plain:'주었다.'},
+    {obj:'우리 집에', hon:'오셨다.', plain:'왔다.'},
+    {obj:'신문을', hon:'보셨다.', plain:'보았다.'},
+    {obj:'동화책을', hon:'읽으셨다.', plain:'읽었다.'},
+    {obj:'맛있는 만두를', hon:'만드셨다.', plain:'만들었다.'},
+    {obj:'된장국을', hon:'끓이셨다.', plain:'끓였다.'}
+  ];
+  elders.forEach(function(el){
+    combos.forEach(function(c){
+      out.push({ t:el+'께서 '+c.obj+' '+c.hon, bad:false });
+      out.push({ t:el+'께서 '+c.obj+' '+c.plain, bad:true });
+    });
+  });
+  return out;
+}
+
+/* 부정호응 */
+function buildNegaPool(){
+  var out=[];
+  var advs=['전혀','별로','결코','도무지','좀처럼'];
+  var phrases=[
+    {subjs:['나는','동생은','민지는','내 친구는'], pos:'배가 고팠다.', neg:'배가 고프지 않았다.'},
+    {subjs:['그 음식은','오늘 급식 반찬은','새로 만든 찌개는'], pos:'맵다.', neg:'맵지 않다.'},
+    {subjs:['이 숙제는','오늘 시험 문제는','그 수학 문제는'], pos:'어렵다.', neg:'어렵지 않다.'},
+    {subjs:['그 이야기는','이 영화는','그 동화책은'], pos:'재미있었다.', neg:'재미있지 않았다.'},
+    {subjs:['동생은','그 친구는','민재는'], pos:'거짓말을 한다.', neg:'거짓말을 하지 않는다.'},
+    {subjs:['나는','그 친구는','우리 반 지훈이는'], pos:'지각을 한다.', neg:'지각을 하지 않는다.'},
+    {subjs:['그 친구는','동생은','나는'], pos:'약속을 어긴다.', neg:'약속을 어기지 않는다.'},
+    {subjs:['나는','그 선수는','우리 팀은'], pos:'포기를 한다.', neg:'포기를 하지 않는다.'},
+    {subjs:['아버지는','선생님은','그 친구는'], pos:'화를 낸다.', neg:'화를 내지 않는다.'},
+    {subjs:['나는','동생은','그 친구는'], pos:'실망했다.', neg:'실망하지 않았다.'},
+    {subjs:['나는','발표를 맡은 친구는','민지는'], pos:'긴장했다.', neg:'긴장하지 않았다.'},
+    {subjs:['나는','우리 가족은','동생은'], pos:'피곤했다.', neg:'피곤하지 않았다.'},
+    {subjs:['나는','동생은','그 친구는'], pos:'졸렸다.', neg:'졸리지 않았다.'},
+    {subjs:['나는','동생은','그 아이는'], pos:'무서웠다.', neg:'무섭지 않았다.'},
+    {subjs:['손이','목소리가','다리가'], pos:'떨렸다.', neg:'떨리지 않았다.'}
+  ];
+  phrases.forEach(function(ph){
+    advs.forEach(function(adv,aIdx){
+      var subj=ph.subjs[aIdx%ph.subjs.length];
+      out.push({ t:subj+' '+adv+' '+ph.neg, bad:false });
+      out.push({ t:subj+' '+adv+' '+ph.pos, bad:true });
+    });
+  });
+  return out;
+}
+
+function dedupePool(arr){
+  var seen={}, out=[];
+  arr.forEach(function(x){ if(!seen[x.t]){ seen[x.t]=1; out.push(x); } });
+  return out;
+}
+var RAIN_POOL = dedupePool(RAIN_POOL_BASE.concat(buildCompPool(), buildTimePool(), buildHonorPool(), buildNegaPool()));
+var G = {
+  open:false,
+  screen:'closed',   /* closed | intro | playing | over */
+  score:0, lives:3, timeLeft:60,
+  best:0,
+  items:[], nextId:1,
+  spawnTimer:null, tickTimer:null,
+  deck:[], lastPick:-1
+};
+
+function rainShuffled(n){
+  var arr=[]; for(var i=0;i<n;i++) arr.push(i);
+  for(var j=arr.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var tmp=arr[j]; arr[j]=arr[k]; arr[k]=tmp; }
+  return arr;
+}
+function rainNextPick(){
+  if(G.deck.length===0){
+    G.deck=rainShuffled(RAIN_POOL.length);
+    if(G.deck.length>1 && G.deck[0]===G.lastPick){
+      var tmp=G.deck[0]; G.deck[0]=G.deck[1]; G.deck[1]=tmp;
+    }
+  }
+  var idx=G.deck.shift();
+  G.lastPick=idx;
+  return RAIN_POOL[idx];
+}
+
+function gamePaint(){
+  var tab=document.getElementById('gameTab'), panel=document.getElementById('gamePanel');
+  tab.classList.toggle('open',G.open);
+  tab.setAttribute('aria-expanded',G.open?'true':'false');
+  panel.classList.toggle('open',G.open);
+  panel.setAttribute('aria-hidden',G.open?'false':'true');
+}
+function gameListHTML(){
+  return GAMES.map(function(g){
+    return '<div class="game-card"><div class="gc-top"><span class="gc-ico">'+g.icon+'</span>'+
+      '<span class="gc-name">'+g.name+'</span>'+
+      (BEST[g.id]>0 ? '<span class="gc-best">최고 '+BEST[g.id]+'점</span>' : '')+
+      '</div><span class="gc-tag">'+g.tag+'</span>'+
+      '<p class="gc-desc">'+g.desc+'</p>'+
+      '<button class="btn btn-primary" data-act="game-open" data-id="'+g.id+'">시작하기</button></div>';
+  }).join('');
+}
+function gameModalShell(){
+  var modal=document.getElementById('gameModal');
+  var body='';
+  if(G.screen==='intro'){
+    body='<div class="game-result">'+
+      '<div style="font-size:52px">🌧️</div>'+
+      '<h2 style="margin:12px 0 8px;font-weight:700">문장호응 산성비</h2>'+
+      '<p class="game-desc">하늘에서 문장이 떨어집니다.<br><b>호응이 어긋난(어색한) 문장</b>만 눌러서 터뜨리세요.<br>자연스러운 문장을 누르거나, 어색한 문장을 놓치면 목숨이 줄어듭니다.</p>'+
+      (BEST.rain>0 ? '<p class="game-tip">최고 기록 · '+BEST.rain+'점</p>' : '')+
+      '<button class="btn btn-primary" data-act="game-start" style="margin-top:18px">60초 시작! →</button>'+
+    '</div>';
+  } else if(G.screen==='playing'){
+    body='<div class="rain-stage" id="rainStage"><div class="rain-ground"></div></div>'+
+      '<p class="game-tip">어색한 문장은 눌러서 터뜨리고, 자연스러운 문장은 그냥 흘려보내세요.</p>';
+  } else if(G.screen==='over'){
+    body='<div class="game-result">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text-secondary)">타임 어택 종료!</div>'+
+      '<div class="gr-score">'+G.score+'<span style="font-size:20px;font-weight:700;color:var(--text-muted)">점</span></div>'+
+      (G.score>=BEST.rain && G.score>0 ? '<p class="game-tip">🎉 최고 기록을 경신했습니다!</p>' : '<p class="game-tip">최고 기록 · '+BEST.rain+'점</p>')+
+      '<div class="navrow" style="margin-top:18px"><button class="btn btn-ghost" data-act="game-close">닫기</button>'+
+      '<button class="btn btn-primary" data-act="game-start">다시 하기 →</button></div>'+
+    '</div>';
+  }
+  modal.innerHTML='<div class="game-box">'+
+    '<div class="game-box-head"><span class="gt">🌧️ 문장호응 산성비</span>'+
+    (G.screen==='playing' ? '<div class="game-hud"><span>⏱ <b id="gTime">'+G.timeLeft+'</b>초</span><span>⭐ <b id="gScore">'+G.score+'</b>점</span><span>❤️ <b id="gLives">'+G.lives+'</b></span></div>' : '')+
+    '<button type="button" class="game-x" data-act="game-close" aria-label="게임 닫기">✕</button></div>'+
+    '<div class="game-box-body">'+body+'</div>'+
+  '</div>';
+}
+function gameStop(){
+  if(G.spawnTimer){ clearTimeout(G.spawnTimer); G.spawnTimer=null; }
+  if(G.tickTimer){ clearInterval(G.tickTimer); G.tickTimer=null; }
+  G.items.forEach(function(it){ if(it.el&&it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+  G.items=[];
+}
+function gameStart(){
+  gameStop();
+  G.score=0; G.lives=3; G.timeLeft=60;
+  G.deck=[]; G.lastPick=-1;
+  G.screen='playing';
+  gameModalShell();
+  G.tickTimer=setInterval(gameTick,1000);
+  scheduleSpawn();
+}
+function gameTick(){
+  G.timeLeft--;
+  var t=document.getElementById('gTime'); if(t) t.textContent=G.timeLeft;
+  if(G.timeLeft<=0) gameEnd();
+}
+function scheduleSpawn(){
+  if(G.screen!=='playing') return;
+  rainSpawn();
+  var elapsed=60-G.timeLeft;
+  var interval=Math.max(650,1500-elapsed*13);
+  G.spawnTimer=setTimeout(scheduleSpawn,interval);
+}
+function rainSpawn(){
+  var stage=document.getElementById('rainStage');
+  if(!stage) return;
+  var pick=rainNextPick();
+  var id=G.nextId++;
+  var el=document.createElement('button');
+  el.type='button';
+  el.className='rain-item';
+  el.setAttribute('data-act','rain-pop');
+  el.setAttribute('data-id',id);
+  el.textContent=pick.t;
+  stage.appendChild(el);
+  var item={ id:id, bad:pick.bad, el:el, done:false };
+  G.items.push(item);
+
+  var w=stage.clientWidth, itemW=el.offsetWidth, pad=8;
+  var maxLeft=w-itemW-pad;
+  var leftPx = maxLeft>pad ? pad+Math.random()*(maxLeft-pad) : Math.max(pad,(w-itemW)/2);
+  el.style.left=leftPx+'px';
+
+  var h=stage.clientHeight;
+  var elapsed=60-G.timeLeft;
+  var travel=Math.max(3200,7000-elapsed*45);
+  el.style.transition='top '+travel+'ms linear, opacity 160ms ease, transform 160ms ease';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(item.done) return;
+      el.style.top=(h+40)+'px';
+    });
+  });
+  el.addEventListener('transitionend',function(e){
+    if(e.propertyName==='top') rainResolve(item);
+  });
+}
+function rainFindItem(id){
+  for(var i=0;i<G.items.length;i++){ if(G.items[i].id===id) return G.items[i]; }
+  return null;
+}
+function rainFreeze(item){
+  var top=getComputedStyle(item.el).top;
+  item.el.style.top=top;
+  item.el.style.transition='opacity 160ms ease, transform 160ms ease';
+}
+function rainPop(id){
+  var item=rainFindItem(id);
+  if(!item||item.done) return;
+  item.done=true;
+  rainFreeze(item);
+  if(item.bad){
+    G.score+=10;
+    item.el.classList.add('pop');
+  } else {
+    G.lives--;
+    rainShake();
+    item.el.classList.add('miss');
+  }
+  rainSync();
+  setTimeout(function(){ rainRemove(item); },170);
+  if(G.lives<=0) gameEnd();
+}
+function rainResolve(item){
+  if(item.done) return;
+  item.done=true;
+  if(item.bad){ G.lives--; rainShake(); }
+  rainRemove(item);
+  rainSync();
+  if(G.lives<=0) gameEnd();
+}
+function rainRemove(item){
+  if(item.el&&item.el.parentNode) item.el.parentNode.removeChild(item.el);
+  var idx=G.items.indexOf(item);
+  if(idx>=0) G.items.splice(idx,1);
+}
+function rainShake(){
+  var stage=document.getElementById('rainStage');
+  if(!stage) return;
+  stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+}
+function rainSync(){
+  var s=document.getElementById('gScore'), l=document.getElementById('gLives');
+  if(s) s.textContent=G.score;
+  if(l) l.textContent=G.lives;
+}
+function gameEnd(){
+  gameStop();
+  if(G.score>BEST.rain){ BEST.rain=G.score; try{ localStorage.setItem('sc_rain_best',BEST.rain); }catch(e){} }
+  if(G.score>0) addXP(Math.round(G.score/10),'산성비 클리어');
+  G.screen='over';
+  gameModalShell();
+}
+
+/* ======================================================================
+   8b. 미니게임 — 수술실 짝맞추기 (메모리 매치)
+   ====================================================================== */
+var MATCH_PAIRS = [
+  ['내 꿈은','되는 것이다'],
+  ['친구들은','뛰어놀았다'],
+  ['어제','갔다'],
+  ['내일','갈 것이다'],
+  ['할머니께서','드셨다'],
+  ['선생님께서','내주셨다'],
+  ['전혀','않았다'],
+  ['별로','않는다']
+];
+var M = { screen:'closed', cards:[], flipped:[], moves:0, matchedCount:0, seconds:0, timer:null, lock:false };
+function matchBuildCards(){
+  var arr=[];
+  MATCH_PAIRS.forEach(function(p,i){ arr.push({pid:i,text:p[0]}); arr.push({pid:i,text:p[1]}); });
+  for(var j=arr.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=arr[j]; arr[j]=arr[k]; arr[k]=t; }
+  arr.forEach(function(c,idx){ c.idx=idx; c.open=false; c.done=false; c.wrong=false; });
+  return arr;
+}
+function matchGridHTML(){
+  return M.cards.map(function(c){
+    var cls='match-card'+(c.open?' flip':'')+(c.done?' done':'')+(c.wrong?' wrong':'');
+    return '<button type="button" class="'+cls+'" data-act="match-flip" data-i="'+c.idx+'" aria-label="카드">'+
+      '<span class="mc-inner"><span class="mc-face mc-back">🩹</span><span class="mc-face mc-front">'+c.text+'</span></span></button>';
+  }).join('');
+}
+function matchScore(){ return Math.max(0, 1000 - Math.max(0,M.moves-8)*25 - M.seconds*4); }
+function matchShell(){
+  var modal=document.getElementById('gameModal');
+  var body='', hud='';
+  if(M.screen==='intro'){
+    body='<div class="game-result"><div style="font-size:52px">🔪</div>'+
+      '<h2 style="margin:12px 0 8px;font-weight:700">수술실 짝맞추기</h2>'+
+      '<p class="game-desc">카드를 두 장씩 뒤집어 서로 어울리는 <b>표현의 짝</b>을 찾아보세요.<br>모든 짝을 가장 적은 시도로 맞히면 명의로 인정받습니다!</p>'+
+      (BEST.match>0 ? '<p class="game-tip">최고 기록 · '+BEST.match+'점</p>' : '')+
+      '<button class="btn btn-primary" data-act="game-start" style="margin-top:18px">수술 시작! →</button></div>';
+  } else if(M.screen==='playing'){
+    body='<div class="match-grid" id="matchGrid">'+matchGridHTML()+'</div>'+
+      '<p class="game-tip">카드 두 장을 뒤집어 짝을 맞혀 보세요.</p>';
+    hud='<span>🔁 <b id="mMoves">'+M.moves+'</b>회</span><span>⏱ <b id="mSeconds">'+M.seconds+'</b>초</span><span>✅ <b id="mMatched">'+M.matchedCount+'</b>/'+MATCH_PAIRS.length+'</span>';
+  } else if(M.screen==='over'){
+    var score=matchScore();
+    body='<div class="game-result">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text-secondary)">수술 완료!</div>'+
+      '<div class="gr-score">'+score+'<span style="font-size:20px;font-weight:700;color:var(--text-muted)">점</span></div>'+
+      '<p class="game-tip">시도 '+M.moves+'회 · '+M.seconds+'초</p>'+
+      (score>=BEST.match && score>0 ? '<p class="game-tip">🎉 최고 기록을 경신했습니다!</p>' : '<p class="game-tip">최고 기록 · '+BEST.match+'점</p>')+
+      '<div class="navrow" style="margin-top:18px"><button class="btn btn-ghost" data-act="game-close">닫기</button>'+
+      '<button class="btn btn-primary" data-act="game-start">다시 하기 →</button></div></div>';
+  }
+  modal.innerHTML='<div class="game-box"><div class="game-box-head"><span class="gt">🔪 수술실 짝맞추기</span>'+
+    (M.screen==='playing' ? '<div class="game-hud">'+hud+'</div>' : '')+
+    '<button type="button" class="game-x" data-act="game-close" aria-label="게임 닫기">✕</button></div>'+
+    '<div class="game-box-body">'+body+'</div></div>';
+}
+function matchSync(){
+  var g=document.getElementById('matchGrid'); if(g) g.innerHTML=matchGridHTML();
+  var mv=document.getElementById('mMoves'); if(mv) mv.textContent=M.moves;
+  var mt=document.getElementById('mMatched'); if(mt) mt.textContent=M.matchedCount;
+}
+function matchFlip(i){
+  if(M.screen!=='playing' || M.lock) return;
+  var c=M.cards[i];
+  if(!c || c.open || c.done) return;
+  c.open=true;
+  M.flipped.push(i);
+  matchSync();
+  if(M.flipped.length===2){
+    M.lock=true; M.moves++;
+    var a=M.cards[M.flipped[0]], b=M.cards[M.flipped[1]];
+    if(a.pid===b.pid){
+      a.done=true; b.done=true; M.matchedCount++;
+      M.flipped=[]; M.lock=false;
+      matchSync();
+      if(M.matchedCount===MATCH_PAIRS.length) matchEnd();
+    } else {
+      a.wrong=true; b.wrong=true;
+      matchSync();
+      setTimeout(function(){
+        a.open=false; b.open=false; a.wrong=false; b.wrong=false;
+        M.flipped=[]; M.lock=false;
+        matchSync();
+      },700);
+    }
+  }
+}
+function matchStart(){
+  matchStop();
+  M.cards=matchBuildCards(); M.flipped=[]; M.moves=0; M.matchedCount=0; M.seconds=0; M.lock=false;
+  M.screen='playing';
+  matchShell();
+  M.timer=setInterval(function(){ M.seconds++; var t=document.getElementById('mSeconds'); if(t) t.textContent=M.seconds; },1000);
+}
+function matchStop(){ if(M.timer){ clearInterval(M.timer); M.timer=null; } }
+function matchEnd(){
+  matchStop();
+  var score=matchScore();
+  if(score>BEST.match){ BEST.match=score; try{ localStorage.setItem('sc_match_best',BEST.match); }catch(e){} }
+  addXP(Math.round(score/12),'수술 성공');
+  M.screen='over';
+  matchShell();
+}
+
+/* ======================================================================
+   8c. 미니게임 — 응급실 골든타임 퀴즈
+   ====================================================================== */
+var QUIZ_POOL = [
+  {pre:'제 장래 희망은 훌륭한 선생님이', opts:['되고 싶습니다.','되는 것입니다.','됩니다.'], answer:1, diag:'comp'},
+  {pre:'이 그림책의 주인공은 용감한 토끼', opts:['이다.','를 좋아한다.','라고 생각한다.'], answer:0, diag:'comp'},
+  {pre:'우리 모둠의 목표는 발표를 잘', opts:['하는 것이다.','한다.','했다.'], answer:0, diag:'comp'},
+  {pre:'내가 존경하는 위인은 세종대왕', opts:['이다.','을 존경한다.','께서 하셨다.'], answer:0, diag:'comp'},
+  {pre:'우리는 어제 놀이공원에', opts:['간다.','갔다.','갈 것이다.'], answer:1, diag:'time'},
+  {pre:'다음 주에 우리 반은 소풍을', opts:['갔다.','간다.','갈 것이다.'], answer:2, diag:'time'},
+  {pre:'그저께 나는 도서관에서 책을', opts:['빌린다.','빌렸다.','빌릴 것이다.'], answer:1, diag:'time'},
+  {pre:'내일 나는 친구 생일 파티에', opts:['갔다.','간다.','갈 것이다.'], answer:2, diag:'time'},
+  {pre:'할아버지께서 마당에서 화분을', opts:['돌봤다.','돌보셨다.','돌본다.'], answer:1, diag:'honor'},
+  {pre:'교장 선생님께서 운동장에서 말씀을', opts:['했다.','하셨다.','한다.'], answer:1, diag:'honor'},
+  {pre:'할머니께서 마루에', opts:['있었다.','계셨다.','있다.'], answer:1, diag:'honor'},
+  {pre:'어머니께서 나에게 용돈을', opts:['줬다.','주셨다.','준다.'], answer:1, diag:'honor'},
+  {pre:'그 문제는 결코', opts:['쉬웠다.','쉽지 않았다.','쉽다.'], answer:1, diag:'nega'},
+  {pre:'동생은 도무지 내 말을', opts:['듣는다.','듣지 않는다.','들었다.'], answer:1, diag:'nega'},
+  {pre:'나는 매운 음식을 별로', opts:['좋아한다.','좋아하지 않는다.','좋아했다.'], answer:1, diag:'nega'},
+  {pre:'그 이야기는 전혀', opts:['사실이다.','사실이 아니다.','사실이었다.'], answer:1, diag:'nega'}
+];
+var Q = { screen:'closed', pool:[], cur:null, score:0, streak:0, lives:3, timeLeft:45, timer:null, locked:false };
+function quizShuffledPool(){
+  var arr=QUIZ_POOL.slice();
+  for(var j=arr.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=arr[j]; arr[j]=arr[k]; arr[k]=t; }
+  return arr;
+}
+function quizNext(){
+  if(Q.pool.length===0) Q.pool=quizShuffledPool();
+  Q.cur=Q.pool.shift();
+  Q.locked=false;
+}
+function quizShell(){
+  var modal=document.getElementById('gameModal');
+  var body='', hud='';
+  if(Q.screen==='intro'){
+    body='<div class="game-result"><div style="font-size:52px">🚑</div>'+
+      '<h2 style="margin:12px 0 8px;font-weight:700">응급실 골든타임 퀴즈</h2>'+
+      '<p class="game-desc">빈칸에 들어갈 알맞은 표현을 빠르게 고르세요.<br>정답을 연속으로 맞히면 점수가 더 크게 오릅니다. 목숨은 3개!</p>'+
+      (BEST.quiz>0 ? '<p class="game-tip">최고 기록 · '+BEST.quiz+'점</p>' : '')+
+      '<button class="btn btn-primary" data-act="game-start" style="margin-top:18px">45초 시작! →</button></div>';
+  } else if(Q.screen==='playing'){
+    var pct=Math.max(0,Math.round(Q.timeLeft/45*100));
+    body='<div class="quiz-timer-wrap"><div class="quiz-timer" id="qTimer" style="--p:'+pct+'"><span id="qTimeNum">'+Q.timeLeft+'</span></div></div>'+
+      '<p class="quiz-sentence">'+Q.cur.pre+' <span class="qblank">?</span></p>'+
+      '<div class="quiz-opts">'+Q.cur.opts.map(function(o,n){ return '<button type="button" class="quiz-opt" data-act="quiz-pick" data-n="'+n+'">'+o+'</button>'; }).join('')+'</div>'+
+      '<p class="quiz-streak" id="qStreak">🔥 연속 정답 '+Q.streak+'회 · ❤️ '+Q.lives+'</p>';
+  } else if(Q.screen==='over'){
+    body='<div class="game-result">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text-secondary)">골든타임 종료!</div>'+
+      '<div class="gr-score">'+Q.score+'<span style="font-size:20px;font-weight:700;color:var(--text-muted)">점</span></div>'+
+      (Q.score>=BEST.quiz && Q.score>0 ? '<p class="game-tip">🎉 최고 기록을 경신했습니다!</p>' : '<p class="game-tip">최고 기록 · '+BEST.quiz+'점</p>')+
+      '<div class="navrow" style="margin-top:18px"><button class="btn btn-ghost" data-act="game-close">닫기</button>'+
+      '<button class="btn btn-primary" data-act="game-start">다시 하기 →</button></div></div>';
+  }
+  modal.innerHTML='<div class="game-box"><div class="game-box-head"><span class="gt">🚑 응급실 골든타임 퀴즈</span>'+
+    (Q.screen==='playing' ? '<div class="game-hud">'+hud+'</div>' : '')+
+    '<button type="button" class="game-x" data-act="game-close" aria-label="게임 닫기">✕</button></div>'+
+    '<div class="game-box-body">'+body+'</div></div>';
+}
+function quizStart(){
+  quizStop();
+  Q.pool=quizShuffledPool(); Q.score=0; Q.streak=0; Q.lives=3; Q.timeLeft=45;
+  quizNext();
+  Q.screen='playing';
+  quizShell();
+  Q.timer=setInterval(function(){
+    Q.timeLeft--;
+    var el=document.getElementById('qTimer');
+    if(el){ el.style.setProperty('--p',Math.max(0,Math.round(Q.timeLeft/45*100))); }
+    var n=document.getElementById('qTimeNum'); if(n) n.textContent=Math.max(0,Q.timeLeft);
+    if(Q.timeLeft<=0) quizEnd();
+  },1000);
+}
+function quizStop(){ if(Q.timer){ clearInterval(Q.timer); Q.timer=null; } }
+function quizPick(n){
+  if(Q.screen!=='playing' || Q.locked) return;
+  Q.locked=true;
+  var correct = n===Q.cur.answer;
+  var opts=document.querySelectorAll('.quiz-opt');
+  if(opts[n]) opts[n].classList.add(correct?'correct':'wrong');
+  if(!correct && opts[Q.cur.answer]) opts[Q.cur.answer].classList.add('correct');
+  if(correct){ Q.streak++; Q.score += 10+Q.streak*2; }
+  else { Q.streak=0; Q.lives--; }
+  var st=document.getElementById('qStreak'); if(st) st.textContent='🔥 연속 정답 '+Q.streak+'회 · ❤️ '+Q.lives;
+  setTimeout(function(){
+    if(Q.screen!=='playing') return;
+    if(Q.lives<=0){ quizEnd(); return; }
+    quizNext();
+    quizShell();
+  },550);
+}
+function quizEnd(){
+  quizStop();
+  if(Q.score>BEST.quiz){ BEST.quiz=Q.score; try{ localStorage.setItem('sc_quiz_best',BEST.quiz); }catch(e){} }
+  if(Q.score>0) addXP(Math.round(Q.score/8),'응급 진단 성공');
+  Q.screen='over';
+  quizShell();
+}
+
+/* ======================================================================
+   8d. 미니게임 — 엑스레이 판독
+   ====================================================================== */
+var XRAY_POOL = CASES.filter(function(c){ return !c.natural && c.type!=='diary'; }).map(function(c){
+  return { tokens:c.tokens, target:c.fix[0], diag:c.diag };
+});
+var X = { screen:'closed', pool:[], cur:null, score:0, lives:3, round:0, timeLeft:0, dur:0, raf:null, last:null, locked:false };
+function xrayShuffledPool(){
+  var arr=XRAY_POOL.slice();
+  for(var j=arr.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=arr[j]; arr[j]=arr[k]; arr[k]=t; }
+  return arr;
+}
+function xrayNext(){
+  if(X.pool.length===0) X.pool=xrayShuffledPool();
+  X.cur=X.pool.shift();
+  X.round++;
+  X.dur=Math.max(3000,6000-X.round*250);
+  X.timeLeft=X.dur;
+  X.locked=false;
+}
+function xrayTokHTML(){
+  return X.cur.tokens.map(function(t,i){ return '<button type="button" class="xray-tok" data-act="xray-pick" data-i="'+i+'">'+t+'</button>'; }).join('');
+}
+function xrayShell(){
+  var modal=document.getElementById('gameModal');
+  var body='', hud='';
+  if(X.screen==='intro'){
+    body='<div class="game-result"><div style="font-size:52px">🩻</div>'+
+      '<h2 style="margin:12px 0 8px;font-weight:700">엑스레이 판독</h2>'+
+      '<p class="game-desc">엑스레이 필름 속 문장에서 <b>호응이 어긋난 단어</b>를 제한 시간 안에 클릭하세요.<br>라운드가 지날수록 시간이 짧아집니다. 목숨은 3개!</p>'+
+      (BEST.xray>0 ? '<p class="game-tip">최고 기록 · '+BEST.xray+'점</p>' : '')+
+      '<button class="btn btn-primary" data-act="game-start" style="margin-top:18px">판독 시작! →</button></div>';
+  } else if(X.screen==='playing'){
+    body='<div class="xray-stage"><div class="xray-sentence" id="xraySentence">'+xrayTokHTML()+'</div>'+
+      '<div class="xray-timerbar"><i id="xBar" style="width:100%"></i></div>'+
+      '<p class="xray-hint">호응이 어긋난 단어를 찾아 클릭하세요!</p></div>';
+    hud='<span>⭐ <b id="xScore">'+X.score+'</b>점</span><span>❤️ <b id="xLives">'+X.lives+'</b></span><span>🔁 '+X.round+'</span>';
+  } else if(X.screen==='over'){
+    body='<div class="game-result">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text-secondary)">판독 종료!</div>'+
+      '<div class="gr-score">'+X.score+'<span style="font-size:20px;font-weight:700;color:var(--text-muted)">점</span></div>'+
+      (X.score>=BEST.xray && X.score>0 ? '<p class="game-tip">🎉 최고 기록을 경신했습니다!</p>' : '<p class="game-tip">최고 기록 · '+BEST.xray+'점</p>')+
+      '<div class="navrow" style="margin-top:18px"><button class="btn btn-ghost" data-act="game-close">닫기</button>'+
+      '<button class="btn btn-primary" data-act="game-start">다시 하기 →</button></div></div>';
+  }
+  modal.innerHTML='<div class="game-box"><div class="game-box-head"><span class="gt">🩻 엑스레이 판독</span>'+
+    (X.screen==='playing' ? '<div class="game-hud">'+hud+'</div>' : '')+
+    '<button type="button" class="game-x" data-act="game-close" aria-label="게임 닫기">✕</button></div>'+
+    '<div class="game-box-body">'+body+'</div></div>';
+}
+function xraySyncHud(){
+  var s=document.getElementById('xScore'); if(s) s.textContent=X.score;
+  var l=document.getElementById('xLives'); if(l) l.textContent=X.lives;
+}
+function xrayLoop(ts){
+  if(X.screen!=='playing') return;
+  if(X.last==null) X.last=ts;
+  var dt=ts-X.last;
+  X.last=ts;
+  if(!X.locked){
+    X.timeLeft-=dt;
+    var bar=document.getElementById('xBar');
+    if(bar) bar.style.width=Math.max(0,X.timeLeft/X.dur*100)+'%';
+    if(X.timeLeft<=0){ X.timeLeft=0; xrayMiss(-1); }
+  }
+  X.raf=requestAnimationFrame(xrayLoop);
+}
+function xrayPick(i){
+  if(X.screen!=='playing' || X.locked) return;
+  if(i===X.cur.target){
+    X.locked=true;
+    var toks=document.querySelectorAll('.xray-tok');
+    if(toks[i]) toks[i].classList.add('hit');
+    var speedBonus=Math.round(X.timeLeft/X.dur*10);
+    X.score+=10+speedBonus;
+    xraySyncHud();
+    setTimeout(xrayAdvance,550);
+  } else {
+    xrayMiss(i);
+  }
+}
+function xrayMiss(i){
+  if(X.locked) return;
+  X.locked=true;
+  var toks=document.querySelectorAll('.xray-tok');
+  if(i>=0 && toks[i]) toks[i].classList.add('miss');
+  if(toks[X.cur.target]) toks[X.cur.target].classList.add('hit');
+  X.lives--;
+  xraySyncHud();
+  setTimeout(function(){
+    if(X.lives<=0) xrayEnd(); else xrayAdvance();
+  },650);
+}
+function xrayAdvance(){
+  if(X.screen!=='playing') return;
+  if(X.lives<=0){ xrayEnd(); return; }
+  xrayNext();
+  xrayShell();
+}
+function xrayStart(){
+  xrayStop();
+  X.score=0; X.lives=3; X.round=0; X.pool=[]; X.last=null;
+  xrayNext();
+  X.screen='playing';
+  xrayShell();
+  X.raf=requestAnimationFrame(xrayLoop);
+}
+function xrayStop(){ if(X.raf){ cancelAnimationFrame(X.raf); X.raf=null; } X.last=null; }
+function xrayEnd(){
+  xrayStop();
+  if(X.score>BEST.xray){ BEST.xray=X.score; try{ localStorage.setItem('sc_xray_best',BEST.xray); }catch(e){} }
+  if(X.score>0) addXP(Math.round(X.score/8),'엑스레이 판독 성공');
+  X.screen='over';
+  xrayShell();
+}
+
+/* ======================================================================
+   8e. 미니게임 공용 디스패처
+   ====================================================================== */
+var ACTIVE=null;
+function mgOpen(id){
+  ACTIVE=id;
+  G.open=false; gamePaint();
+  document.getElementById('gameModal').classList.add('show');
+  if(id==='rain'){ G.screen='intro'; gameModalShell(); }
+  else if(id==='match'){ M.screen='intro'; matchShell(); }
+  else if(id==='quiz'){ Q.screen='intro'; quizShell(); }
+  else if(id==='xray'){ X.screen='intro'; xrayShell(); }
+}
+function mgClose(){
+  if(ACTIVE==='rain'){ gameStop(); G.screen='closed'; }
+  else if(ACTIVE==='match'){ matchStop(); M.screen='closed'; }
+  else if(ACTIVE==='quiz'){ quizStop(); Q.screen='closed'; }
+  else if(ACTIVE==='xray'){ xrayStop(); X.screen='closed'; }
+  var modal=document.getElementById('gameModal');
+  modal.classList.remove('show');
+  modal.innerHTML='';
+  ACTIVE=null;
+}
+function mgStart(){
+  if(ACTIVE==='rain') gameStart();
+  else if(ACTIVE==='match') matchStart();
+  else if(ACTIVE==='quiz') quizStart();
+  else if(ACTIVE==='xray') xrayStart();
+}
+
+/* ======================================================================
+   9. 렌더 · 이벤트
+   ====================================================================== */
+function render(keepScroll){
+  var y=window.scrollY;
+  document.getElementById('stage').innerHTML = V[S.screen]();
+  paintHeader();
+  paintIdBadge();
+  if(keepScroll) window.scrollTo(0,y); else window.scrollTo(0,0);
+}
+
+document.addEventListener('click',function(ev){
+  var el=ev.target.closest('[data-act]');
+  if(!el || el.disabled) return;
+  var act=el.getAttribute('data-act');
+
+  if(act==='go'){
+    var to=el.getAttribute('data-to');
+    if(to==='cases'){ S.screen='cases'; }
+    else S.screen=to;
+    render(); return;
+  }
+  if(act==='restart'){
+    S.screen='home'; S.pro={ stage:0, hint1:false, hint2:false }; render(); return;
+  }
+
+  /* 사원증 발급 */
+  if(act==='signup-go'){
+    var nameInp=document.getElementById('playerName');
+    var nameVal=(nameInp && nameInp.value || '').trim();
+    if(!nameVal) nameVal='이름 없는 의사';
+    PLAYER.name=nameVal.slice(0,12);
+    savePlayer();
+    S.screen='prologue';
+    render();
+    return;
+  }
+
+  /* 상단 단계 바 — 어느 단계로든 자유롭게 이동 */
+  if(act==='flow-jump'){
+    var jumpKey=el.getAttribute('data-key');
+    var JUMP_SCREEN={ first:'first', explore:'hub', chart:'chart', cases:'cases', seminar:'seminar', summary:'summary' };
+    S.screen=JUMP_SCREEN[jumpKey]||S.screen;
+    render(); return;
+  }
+
+  /* 프롤로그 */
+  if(act==='pro-next'){ S.pro.stage=+el.getAttribute('data-n'); render(); return; }
+  if(act==='pro-hint'){ S.pro['hint'+el.getAttribute('data-n')]=true; render(true); return; }
+
+  /* 첫 진찰 */
+  if(act==='first-judge'){ S.first.judged=el.getAttribute('data-v'); render(true); return; }
+  if(act==='tok' && S.screen==='first'){
+    var i=+el.getAttribute('data-i'), p=S.first.picked, pos=p.indexOf(i);
+    if(pos>=0) p.splice(pos,1); else { p.push(i); if(p.length>2) p.shift(); }
+    render(true); return;
+  }
+  if(act==='first-swap'){ S.first.swap=el.getAttribute('data-v'); S.first.reaction=null; render(true); return; }
+  if(act==='first-react'){ S.first.reaction=el.getAttribute('data-v'); render(true); return; }
+
+  /* 탐구 */
+  if(act==='open-diag'){ S.curDiag=el.getAttribute('data-id'); S.ex[S.curDiag].visited=true; S.screen='explore'; render(); return; }
+  if(act==='ex'){
+    var st=S.ex[S.curDiag];
+    st[el.getAttribute('data-k')]=el.getAttribute('data-v');
+    st.touched=1; st.tried[st.a+'|'+st.b]=1;
+    render(true); return;
+  }
+  if(act==='pair-save'){
+    var s2=S.ex[S.curDiag];
+    s2.pa=(document.getElementById('pa').value||'').trim();
+    s2.pb=(document.getElementById('pb').value||'').trim();
+    var wasDone2=s2.done;
+    s2.done=true;
+    if(!wasDone2) addXP(20,D(S.curDiag).name+' 진단 완료');
+    render(true); return;
+  }
+  if(act==='ref'){ var id=el.getAttribute('data-id'); S.openRef = (S.openRef===id? null : id); render(true); return; }
+
+  /* 처방 */
+  if(act==='c-judge'){
+    var i2=S.caseIdx, c=CASES[i2], s3=S.cs[i2], v=el.getAttribute('data-v');
+    var prevStage3=s3.stage;
+    s3.judge=v; s3.msg=null;
+    if(c.natural && v==='nat'){ s3.stage=1; if(prevStage3<1) addXP(10,'정상 판정 성공'); }
+    else if(c.natural && v==='fix'){ s3.msg=fb('look','한 번 더 진찰해 볼까요?','이 문장의 주어와 서술어, 시간 표현을 차례로 짚어 보세요. 모두 짝이 맞는지 확인해 봅시다.'); s3.judge=null; }
+    else if(!c.natural && v==='fix'){ s3.stage=1; }
+    else { s3.msg=fb('look','좋은 시도예요.',c.hint); s3.judge=null; }
+    render(true); return;
+  }
+  if(act==='c-diag'){
+    var i3=S.caseIdx, c3=CASES[i3], s4=S.cs[i3], pick=el.getAttribute('data-id');
+    s4.diag=pick;
+    if(pick===c3.diag){ s4.stage=2; s4.msg=null; }
+    else { s4.msg=fb('look','다시 살펴볼까요?',c3.hint); s4.stage=1; }
+    render(true); return;
+  }
+  if(act==='tok' && S.screen==='cases'){
+    var s5=S.cs[S.caseIdx];
+    if(s5.stage!==2) return;
+    var n=+el.getAttribute('data-i'), q=s5.marks.indexOf(n);
+    if(q>=0) s5.marks.splice(q,1); else s5.marks.push(n);
+    render(true); return;
+  }
+  if(act==='c-mark-done'){
+    var i4=S.caseIdx, c4=CASES[i4], s6=S.cs[i4];
+    var hit=c4.bad.every(function(n){ return s6.marks.indexOf(n)>=0; });
+    if(hit){ s6.stage=3; s6.msg=null; }
+    else { s6.msg=fb('look','조금 더 찾아볼까요?',c4.hint+' 짝을 이루는 표현은 보통 두 군데에 있습니다.'); }
+    render(true); return;
+  }
+  if(act==='c-fix'){
+    var i5=S.caseIdx, c5=CASES[i5], s7=S.cs[i5], k=+el.getAttribute('data-n');
+    var prevStage7=s7.stage;
+    s7.fix=k;
+    if(k===c5.answer){ s7.stage=4; s7.msg=null; if(prevStage7<4) addXP(15,'치료 성공'); }
+    else { s7.msg=fb('look','한 번 더 읽어 볼까요?','고른 표현을 넣어 문장 전체를 소리 내어 읽어 보세요. 앞의 표현과 잘 어울리나요?'); }
+    render(true); return;
+  }
+  if(act==='c-next'){ if(S.caseIdx<CASES.length-1){ S.caseIdx++; render(); } return; }
+  if(act==='c-prev'){
+    if(S.caseIdx>0){ S.caseIdx--; render(); }
+    else { S.screen='chart'; render(); }
+    return;
+  }
+
+  /* 처방 — 일기 속 오류 찾기 */
+  if(act==='d-mark'){
+    var s8=S.cs[S.caseIdx];
+    if(s8.stage>=1) return;
+    var n2=+el.getAttribute('data-i'), q2=s8.marks.indexOf(n2);
+    if(q2>=0) s8.marks.splice(q2,1);
+    else if(s8.marks.length<3) s8.marks.push(n2);
+    s8.msg=null;
+    render(true); return;
+  }
+  if(act==='d-check'){
+    var c6=CASES[S.caseIdx], s9=S.cs[S.caseIdx];
+    var prevStage9=s9.stage;
+    var bad6=[]; c6.sentences.forEach(function(s,idx){ if(s.bad) bad6.push(idx); });
+    var same = s9.marks.length===3 && bad6.every(function(n){ return s9.marks.indexOf(n)>=0; });
+    if(same){ s9.stage=1; s9.msg=null; if(prevStage9<1) addXP(25,'일기 오류 3개 발견'); }
+    else { s9.msg=fb('look','아직 정확하지 않아요.','고른 문장을 하나씩 다시 소리 내어 읽어 보세요. 앞의 표현과 뒤의 표현이 서로 잘 어울리나요?'); }
+    render(true); return;
+  }
+
+  /* 세미나 */
+  if(act==='sem-pick'){ S.seminarIdx=+el.getAttribute('data-n'); S.seminarStage=0; render(true); return; }
+  if(act==='sem-stage'){ S.seminarStage=+el.getAttribute('data-n'); render(true); return; }
+
+  /* 미니게임 */
+  if(act==='game-toggle'){ G.open=!G.open; gamePaint(); return; }
+  if(act==='game-open'){ mgOpen(el.getAttribute('data-id')); return; }
+  if(act==='game-close'){ mgClose(); return; }
+  if(act==='game-start'){ mgStart(); return; }
+  if(act==='rain-pop'){ rainPop(+el.getAttribute('data-id')); return; }
+  if(act==='match-flip'){ matchFlip(+el.getAttribute('data-i')); return; }
+  if(act==='quiz-pick'){ quizPick(+el.getAttribute('data-n')); return; }
+  if(act==='xray-pick'){ xrayPick(+el.getAttribute('data-i')); return; }
+});
+
+/* 입력값 유지 */
+document.addEventListener('input',function(ev){
+  if(ev.target.id==='pa') S.ex[S.curDiag].pa=ev.target.value;
+  if(ev.target.id==='pb') S.ex[S.curDiag].pb=ev.target.value;
+  if(ev.target.id==='playerName'){
+    var v=ev.target.value.trim();
+    var prev=document.getElementById('bpNamePreview');
+    if(prev) prev.textContent = v? v+' 선생님' : '이름을 입력해 주세요';
+  }
+});
+
+document.getElementById('gameList').innerHTML=gameListHTML();
+gamePaint();
+render();
+})();
+</script>
+</body>
+</html>
