@@ -623,8 +623,27 @@ var S = {
   cs:{},          /* 케이스 상태 */
   seminarIdx:0, seminarStage:0
 };
+function normalizeName(value){
+  if(value==null) return '';
+  var str=String(value).trim().replace(/\s+/g,' ');
+  return str.slice(0,12);
+}
+function normalizeXp(value){
+  var n=Number(value);
+  return Number.isFinite(n) && n>=0 ? Math.floor(n) : 0;
+}
+function sanitizeProgressState(){
+  if(!S.pro || typeof S.pro!=='object') S.pro={ stage:0, hint1:false, hint2:false };
+  S.pro.stage = Number(S.pro.stage) >= 0 && Number(S.pro.stage) <= 2 ? Number(S.pro.stage) : 0;
+  S.pro.hint1 = !!S.pro.hint1;
+  S.pro.hint2 = !!S.pro.hint2;
+  if(!S.first || typeof S.first!=='object') S.first={ judged:null, picked:[], swap:'간다', reaction:null };
+  if(!S.ex || typeof S.ex!=='object') S.ex={};
+  if(!S.cs || typeof S.cs!=='object') S.cs={};
+}
 DIAGS.forEach(function(d){ S.ex[d.id]={ a:EXPLORE[d.id].a.init, b:EXPLORE[d.id].b.init, touched:0, tried:{}, pa:'', pb:'', done:false, visited:false }; });
 CASES.forEach(function(c,i){ S.cs[i]={ stage:0, judge:null, diag:null, marks:[], fix:null, msg:null }; });
+sanitizeProgressState();
 
 function allVisited(){ return DIAGS.every(function(d){ return S.ex[d.id].visited; }); }
 function visitedCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].visited) n++; }); return n; }
@@ -635,9 +654,17 @@ function visitedCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].visit
 var PLAYER = { name:'', xp:0 };
 try{
   var _savedName = localStorage.getItem('sc_player_name');
-  if(_savedName){ PLAYER.name=_savedName; PLAYER.xp = +(localStorage.getItem('sc_player_xp')||0) || 0; }
+  if(_savedName !== null){
+    PLAYER.name = normalizeName(_savedName);
+    PLAYER.xp = normalizeXp(localStorage.getItem('sc_player_xp'));
+  }
 }catch(e){}
-function savePlayer(){ try{ localStorage.setItem('sc_player_name',PLAYER.name); localStorage.setItem('sc_player_xp',PLAYER.xp); }catch(e){} }
+function savePlayer(){
+  try{
+    localStorage.setItem('sc_player_name', PLAYER.name || '');
+    localStorage.setItem('sc_player_xp', String(PLAYER.xp || 0));
+  }catch(e){}
+}
 function escapeHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
 }
@@ -1965,8 +1992,12 @@ function mgStart(){
    9. 렌더 · 이벤트
    ====================================================================== */
 function render(keepScroll){
+  sanitizeProgressState();
+  if(!V[S.screen]) S.screen='home';
   var y=window.scrollY;
-  document.getElementById('stage').innerHTML = V[S.screen]();
+  var stage=document.getElementById('stage');
+  if(!stage) return;
+  stage.innerHTML = V[S.screen]();
   paintHeader();
   paintIdBadge();
   if(keepScroll) window.scrollTo(0,y); else window.scrollTo(0,0);
@@ -1979,6 +2010,7 @@ document.addEventListener('click',function(ev){
 
   if(act==='go'){
     var to=el.getAttribute('data-to');
+    if(!V[to]) to='home';
     if(to==='cases'){ S.screen='cases'; }
     else S.screen=to;
     render(); return;
@@ -1992,7 +2024,7 @@ document.addEventListener('click',function(ev){
     var nameInp=document.getElementById('playerName');
     var nameVal=(nameInp && nameInp.value || '').trim();
     if(!nameVal) nameVal='이름 없는 의사';
-    PLAYER.name=nameVal.slice(0,12);
+    PLAYER.name=normalizeName(nameVal || '이름 없는 의사');
     savePlayer();
     S.screen='prologue';
     render();
